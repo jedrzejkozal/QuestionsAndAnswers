@@ -1,0 +1,31 @@
+{%load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Log In | QuestionAndAnswers</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'ask/login.css' %}">
+</head>
+
+<body>
+    <main class="login">
+        <form method="POST" action="{% url 'ask:login' %}">
+            {% csrf_token %}
+            <label for="login">Username:</label>
+            <br>
+            <input type="text" id="login" name="username">
+            <br>
+            <label for="password">Password:</label>
+            <br>
+            <input type="password" id="Password" name="password">
+            {% if form.errors %}
+            <p class="error">Wrong username or password. Please try again.</p>
+            {% endif %}
+            <br>
+            <input class="button" type="submit" value="Log In">
+            <input class="button" type="button" value="Forget Password">
+        </form>
+    </main>
+</body>
+
+</html>

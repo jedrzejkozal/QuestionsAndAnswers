@@ -1,0 +1,53 @@
+{%load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sign Up | QuestionAndAnswers</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'ask/signup.css' %}">
+</head>
+
+<body>
+    <main class="signup">
+        <form method="POST" action="{% url 'ask:signup' %}">
+            {% csrf_token %}
+            <label for="first_name">First name:</label>
+            <br>
+            <input type="text" id="first_name" name="first_name">
+            <br>
+            <label for="second_name">Second name:</label>
+            <br>
+            <input type="text" id="second name" name="second_name">
+            <br>
+            <label for="login">Username:</label>
+            <br>
+            <input type="text" id="login" name="username">
+            <br>
+            <label for="email">Email:</label>
+            <br>
+            <input type="email" id="email" name="email">
+            <br>
+            <label for="password">Password:</label>
+            <br>
+            <input type="password" id="password" name="password">
+            <br>
+            <label for="password_repeat">Repeat password:</label>
+            <br>
+            <input type="password" id="password_repeat" name="password_repeat">
+            {% if form.errors %}
+            <p class="error">Wrong username or password. Please try again.</p>
+            {% endif %}
+            <br>
+            <input type="checkbox" id="terms" name="terms">
+            <label for="terms" class="consent">I accept the <a href="ask/terms">Terms of Service</a></label>
+            <br>
+            <input type="checkbox" id="privacy" name="privacy">
+            <label for="privacy" class="consent">I have read and agree to the <a href="ask/terms">Privacy
+                    policy</label>
+            </p>
+            <input class="button" type="submit" value="Sign Up">
+        </form>
+    </main>
+</body>
+
+</html>
