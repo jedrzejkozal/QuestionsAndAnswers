@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http.response import HttpResponseBadRequest
+from django.views.generic.edit import FormView
 
 from .forms import SignUpForm
 
@@ -8,17 +9,14 @@ def index(request):
     return render(request, "ask/index.html")
 
 
-def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            return render(request, "ask/user.html", status=200)
-        else:
-            return render(request, "ask/signup.html",
-                          context={
-                              'error_message': "Username must be specified"},
-                          status=400)
-    return render(request, "ask/signup.html", status=200)
+class SignUpView(FormView):
+    template_name = 'ask/signup.html'
+    form_class = SignUpForm
+    success_url = 'ask/user.html'
+
+    def form_valid(self, form):
+        # do something
+        return super().form_valid(form)
 
 
 def user_profile(request):
