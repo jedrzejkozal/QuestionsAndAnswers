@@ -81,7 +81,7 @@ class SimilarityValidator(UserAttributeSimilarityValidator):
         for value_part in value_parts:
             if SequenceMatcher(a=password.lower(), b=value_part.lower()).quick_ratio() >= self.max_similarity:
                 raise ValidationError(
-                    _("The password is too similar to the %(verbose_name)s."),
+                    _("The password is too similar to the %(verbose_name)s"),
                     code='password_too_similar',
                     params={'verbose_name': attribute_name},
                 )

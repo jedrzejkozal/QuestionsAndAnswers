@@ -79,7 +79,7 @@ class SignUpTests(TestCase):
                              "Username already taken")
 
     def test_email_already_taken(self):
-        User.objects.create_user("otherUser", email="some@email.com")
+        User.objects.create_user("otherUser", email="some1@email.com")
         form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)
 
@@ -171,4 +171,4 @@ class SignUpTests(TestCase):
                 'username': 'jj',
                 'password': 'svm@43',
                 'password_repeat': 'svm@43',
-                'email': 'some@email.com'}
+                'email': 'some1@email.com'}

@@ -18,9 +18,8 @@ class SignUpForm(forms.Form):
             validator = SimilarityValidator(max_similarity=0.5)
             validator.validate(
                 password, user=self.cleaned_data)
-        except ValidationError:
-            raise forms.ValidationError(
-                'The password is too similar to the username')
+        except ValidationError as e:
+            raise forms.ValidationError(str(e)[2:-2])
         except KeyError:
             return None
         return password
