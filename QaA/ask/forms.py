@@ -23,6 +23,7 @@ class EmailField(forms.EmailField):
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from django.contrib.auth.password_validation import UserAttributeSimilarityValidator
 
 
 class SpecialCharactersValidator:
@@ -60,6 +61,30 @@ class NumbersValidator:
         return _("Password must contain at least one number")
 
 
+class SimilarityValidator(UserAttributeSimilarityValidator):
+
+    def validate(self, password, user=None):
+        if not user:
+            return
+
+        for attribute_name in self.user_attributes:
+            try:
+                value = user[attribute_name]
+            except KeyError:
+                continue
+
+            import re
+            from difflib import SequenceMatcher
+            value_parts = re.split(r'\W+', value) + [value]
+            for value_part in value_parts:
+                if SequenceMatcher(a=password.lower(), b=value_part.lower()).quick_ratio() >= self.max_similarity:
+                    raise ValidationError(
+                        _("The password is too similar to the %(verbose_name)s."),
+                        code='password_too_similar',
+                        params={'verbose_name': attribute_name},
+                    )
+
+
 class PasswordField(forms.CharField):
 
     def __init__(self, *args, **kwargs):
@@ -84,6 +109,20 @@ class SignUpForm(forms.Form):
                              error_messages={"min_length": "Password to short. Must be at least 6 characters long"})
     password_repeat = forms.CharField(min_length=6, required=True)
     email = EmailField(required=True)
+
+    def clean_password(self):
+        try:
+            password = self.cleaned_data['password']
+
+            validator = SimilarityValidator(max_similarity=0.5)
+            validator.validate(
+                password, user=self.cleaned_data)
+        except ValidationError:
+            raise forms.ValidationError(
+                'The password is too similar to the username')
+        except KeyError:
+            return None
+        return password
 
     def clean_password_repeat(self):
         try:

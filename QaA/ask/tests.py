@@ -135,6 +135,18 @@ class SignUpTests(TestCase):
             response, "form", "password",
             ["['Password must contain at least one number']"])
 
+    def test_password_to_similar_to_username_form_is_invalid(self):
+        form_input = self.valid_form()
+        form_input['password'] = "jjjj@1"
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        response.context = response.context_data
+        self.assertFormError(
+            response, "form", "password",
+            ["The password is too similar to the username"])
+
     def test_form_correct_user_redirected(self):
         form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)
@@ -150,8 +162,8 @@ class SignUpTests(TestCase):
 
         response = SignUpView.as_view()(request)
 
-        o = User.objects.filter(username='jj')
-        self.assertEqual(o[0].first_name, 'JJ')
+        queryset = User.objects.filter(username='jj')
+        self.assertEqual(queryset[0].first_name, 'JJ')
 
     def valid_form(self):
         return {'first_name': 'JJ',
