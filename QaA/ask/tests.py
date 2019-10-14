@@ -147,6 +147,18 @@ class SignUpTests(TestCase):
             response, "form", "password",
             ["The password is too similar to the username"])
 
+    def test_password_to_common_form_is_invalid(self):
+        form_input = self.valid_form()
+        form_input['password'] = "qwerty"
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        response.context = response.context_data
+        self.assertFormError(
+            response, "form", "password",
+            ["['Password must contain at least one special character', 'Password must contain at least one number', 'This password is too common.']"])
+
     def test_form_correct_user_redirected(self):
         form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)

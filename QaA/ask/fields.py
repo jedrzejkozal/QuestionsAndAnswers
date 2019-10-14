@@ -7,6 +7,7 @@ from django.contrib.auth.password_validation import (
     UserAttributeSimilarityValidator, validate_password)
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from django.contrib.auth.password_validation import CommonPasswordValidator
 
 
 class UsernameField(forms.CharField):
@@ -92,7 +93,7 @@ class PasswordField(forms.CharField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.password_validators = [
-            SpecialCharactersValidator(), NumbersValidator()]
+            SpecialCharactersValidator(), NumbersValidator(), CommonPasswordValidator()]
 
     def validate(self, value):
         super().validate(value)
