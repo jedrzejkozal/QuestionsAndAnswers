@@ -90,7 +90,7 @@ class SignUpTests(TestCase):
                              "Email address already taken")
 
     def test_to_short_password_form_is_invalid(self):
-        request = self.factory.post('ask/signup', data={'password': 'qwer#'})
+        request = self.factory.post('ask/signup', data={'password': 'qwe1#'})
 
         response = SignUpView.as_view()(request)
 
@@ -122,6 +122,18 @@ class SignUpTests(TestCase):
         self.assertFormError(
             response, "form", "password",
             ["['Password must contain at least one special character']"])
+
+    def test_password_does_not_contain_numbers_form_is_invalid(self):
+        form_input = self.valid_form()
+        form_input['password'] = "aaaa#@"
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        response.context = response.context_data
+        self.assertFormError(
+            response, "form", "password",
+            ["['Password must contain at least one number']"])
 
     def test_form_correct_user_redirected(self):
         form_input = self.valid_form()

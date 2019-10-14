@@ -42,11 +42,30 @@ class SpecialCharactersValidator:
         return _("Password must contain one special characters {}".format(self.special_characters))
 
 
+class NumbersValidator:
+
+    def validate(self, password, user=None):
+        if self.has_numbers(password):
+            return None
+        raise ValidationError([
+            ValidationError(
+                _("Password must contain at least one number"),
+                code="numbers")
+        ])
+
+    def has_numbers(self, string):
+        return any(c.isdigit() for c in string)
+
+    def get_help_text(self):
+        return _("Password must contain at least one number")
+
+
 class PasswordField(forms.CharField):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.password_validators = [SpecialCharactersValidator(), ]
+        self.password_validators = [
+            SpecialCharactersValidator(), NumbersValidator()]
 
     def validate(self, value):
         super().validate(value)
