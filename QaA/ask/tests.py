@@ -67,17 +67,6 @@ class SignUpTests(TestCase):
         self.assertFormError(response, "form", "email",
                              "This field is required.")
 
-    def test_to_short_password_form_is_invalid(self):
-        request = self.factory.post('ask/signup', data={'password': 'qwert'})
-
-        response = SignUpView.as_view()(request)
-
-        self.assertEqual(response.status_code, 200)
-
-        response.context = response.context_data
-        self.assertFormError(response, "form", "password",
-                             "Password to short. Must be at least 6 characters long")
-
     def test_username_already_taken(self):
         User.objects.create_user("jj")
         form_input = self.valid_form()
@@ -100,6 +89,17 @@ class SignUpTests(TestCase):
         self.assertFormError(response, "form", "email",
                              "Email address already taken")
 
+    def test_to_short_password_form_is_invalid(self):
+        request = self.factory.post('ask/signup', data={'password': 'qwer#'})
+
+        response = SignUpView.as_view()(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        response.context = response.context_data
+        self.assertFormError(response, "form", "password",
+                             "Password to short. Must be at least 6 characters long")
+
     def test_password_and_password_repeat_does_not_match(self):
         form_input = self.valid_form()
         form_input['password_repeat'] = 'aaa@41'
@@ -110,6 +110,18 @@ class SignUpTests(TestCase):
         response.context = response.context_data
         self.assertFormError(
             response, "form", "password_repeat", "Password does not match")
+
+    def test_password_does_not_contain_special_characters_form_is_invalid(self):
+        form_input = self.valid_form()
+        form_input['password'] = "aaaa41"
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        response.context = response.context_data
+        self.assertFormError(
+            response, "form", "password",
+            ["['Password must contain at least one special character']"])
 
     def test_form_correct_user_redirected(self):
         form_input = self.valid_form()
