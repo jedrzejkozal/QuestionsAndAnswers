@@ -121,7 +121,7 @@ class SignUpTests(TestCase):
         response.context = response.context_data
         self.assertFormError(
             response, "form", "password",
-            ["['Password must contain at least one special character']"])
+            ["Password must contain at least one special character"])
 
     def test_password_does_not_contain_numbers_form_is_invalid(self):
         form_input = self.valid_form()
@@ -133,7 +133,7 @@ class SignUpTests(TestCase):
         response.context = response.context_data
         self.assertFormError(
             response, "form", "password",
-            ["['Password must contain at least one number']"])
+            ["Password must contain at least one number"])
 
     def test_password_to_similar_to_username_form_is_invalid(self):
         form_input = self.valid_form()
@@ -157,7 +157,7 @@ class SignUpTests(TestCase):
         response.context = response.context_data
         self.assertFormError(
             response, "form", "password",
-            ["['Password must contain at least one special character', 'Password must contain at least one number', 'This password is too common.']"])
+            ["Password must contain at least one special character", "Password must contain at least one number", "This password is too common."])
 
     def test_form_correct_user_redirected(self):
         form_input = self.valid_form()
@@ -184,3 +184,10 @@ class SignUpTests(TestCase):
                 'password': 'svm@43',
                 'password_repeat': 'svm@43',
                 'email': 'some1@email.com'}
+
+
+"""
+TO DO:
+Terms of service
+Privacy policy
+"""

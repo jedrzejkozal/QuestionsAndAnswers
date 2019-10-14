@@ -8,7 +8,7 @@ class SignUpForm(forms.Form):
     username = UsernameField(max_length=20, required=True)
     password = PasswordField(min_length=6, required=True,
                              error_messages={"min_length": "Password to short. Must be at least 6 characters long"})
-    password_repeat = forms.CharField(min_length=6, required=True)
+    password_repeat = forms.CharField(required=True)
     email = EmailField(required=True)
 
     def clean_password(self):

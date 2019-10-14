@@ -13,7 +13,7 @@ def index(request):
 class SignUpView(FormView):
     template_name = 'ask/signup.html'
     form_class = SignUpForm
-    success_url = 'ask/user.html'
+    success_url = 'ask/user'
 
     def form_valid(self, form):
         user = self.form_to_model(form)

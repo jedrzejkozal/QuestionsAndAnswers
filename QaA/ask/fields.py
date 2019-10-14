@@ -101,4 +101,7 @@ class PasswordField(forms.CharField):
             validate_password(
                 value, password_validators=self.password_validators)
         except ValidationError as e:
-            raise forms.ValidationError(str(e))
+            errors = []
+            for err in e:
+                errors.append(forms.ValidationError(_(err)))
+            raise forms.ValidationError(errors)
