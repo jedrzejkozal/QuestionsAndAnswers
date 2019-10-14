@@ -26,4 +26,13 @@ class SignUpForm(forms.Form):
     username = UsernameField(max_length=20, required=True)
     password = forms.CharField(min_length=6, required=True,
                                error_messages={"min_length": "Password to short. Must be at least 6 characters long"})
+    password_repeat = forms.CharField(min_length=6, required=True)
     email = EmailField(required=True)
+
+    def clean_password_repeat(self):
+        password = self.cleaned_data['password']
+        password_repeat = self.cleaned_data['password_repeat']
+
+        if password != password_repeat:
+            raise forms.ValidationError('Password does not match')
+        return password_repeat

@@ -22,6 +22,7 @@ class SignUpView(FormView):
 
     def form_to_model(self, form):
         clean_data = form.cleaned_data
+        del clean_data['password_repeat']
         return User(**clean_data)
 
 
