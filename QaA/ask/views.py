@@ -15,14 +15,14 @@ class SignUpView(FormView):
     form_class = SignUpForm
     success_url = 'ask/user.html'
 
-    def form_to_model(self, form):
-        clean_data = form.cleaned_data
-        return User(**clean_data)
-
     def form_valid(self, form):
         user = self.form_to_model(form)
         user.save()
         return super().form_valid(form)
+
+    def form_to_model(self, form):
+        clean_data = form.cleaned_data
+        return User(**clean_data)
 
 
 def user_profile(request):

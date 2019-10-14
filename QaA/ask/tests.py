@@ -78,6 +78,17 @@ class SignUpTests(TestCase):
         self.assertFormError(response, "form", "password",
                              "Password to short. Must be at least 6 characters long")
 
+    def test_username_already_taken(self):
+        User.objects.create_user("jj")
+        form_input = self.valid_form()
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        response.context = response.context_data
+        self.assertFormError(response, "form", "username",
+                             "Username already taken")
+
     def valid_form(self):
         return {'first_name': 'JJ',
                 'last_name': 'Goatl',
@@ -85,7 +96,7 @@ class SignUpTests(TestCase):
                 'password': 'svm@43',
                 'email': 'cool@email.com'}
 
-    def test_form_correct_form_is_invalid(self):
+    def test_form_correct_user_redirected(self):
         form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)
 
