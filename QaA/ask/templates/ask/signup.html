@@ -42,11 +42,13 @@
             <input type="password" id="password_repeat" name="password_repeat">
             <br>
             <input type="checkbox" id="terms" name="terms">
-            <label for="terms" class="consent">I accept the <a href="ask/terms">Terms of Service</a></label>
+            <label for="terms" class="consent">I accept the <a href="terms">Terms of Service</a></label>
+            {{ form.terms.errors }}
             <br>
             <input type="checkbox" id="privacy" name="privacy">
-            <label for="privacy" class="consent">I have read and agree to the <a href="ask/terms">Privacy
+            <label for="privacy" class="consent">I have read and agree to the <a href="privacypolicy">Privacy
                     policy</a></label>
+            {{ form.privacy.errors }}
             <br>
             <input class="button" type="submit" value="Sign Up">
         </form>
