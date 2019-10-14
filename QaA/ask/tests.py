@@ -159,6 +159,30 @@ class SignUpTests(TestCase):
             response, "form", "password",
             ["Password must contain at least one special character", "Password must contain at least one number", "This password is too common."])
 
+    def test_no_terms_conset_form_is_invalid(self):
+        form_input = self.valid_form()
+        form_input['terms'] = "False"
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        response.context = response.context_data
+        self.assertFormError(
+            response, "form", "terms",
+            ["You must agree to Terms of Service"])
+
+    def test_no_privacy_policy_conset_form_is_invalid(self):
+        form_input = self.valid_form()
+        form_input['privacy'] = "False"
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        response.context = response.context_data
+        self.assertFormError(
+            response, "form", "privacy",
+            ["You must agree to Privacy policy"])
+
     def test_form_correct_user_redirected(self):
         form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)
@@ -183,7 +207,9 @@ class SignUpTests(TestCase):
                 'username': 'jj',
                 'password': 'svm@43',
                 'password_repeat': 'svm@43',
-                'email': 'some1@email.com'}
+                'email': 'some1@email.com',
+                'terms': 'True',
+                'privacy': 'True'}
 
 
 """

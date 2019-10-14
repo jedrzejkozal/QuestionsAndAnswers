@@ -10,6 +10,10 @@ class SignUpForm(forms.Form):
                              error_messages={"min_length": "Password to short. Must be at least 6 characters long"})
     password_repeat = forms.CharField(required=True)
     email = EmailField(required=True)
+    terms = forms.BooleanField(required=True, error_messages={
+                               "required": "You must agree to Terms of Service"})
+    privacy = forms.BooleanField(required=True, error_messages={
+        "required": "You must agree to Privacy policy"})
 
     def clean_password(self):
         try:
