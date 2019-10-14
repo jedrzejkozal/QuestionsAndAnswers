@@ -78,12 +78,15 @@ class SignUpTests(TestCase):
         self.assertFormError(response, "form", "password",
                              "Password to short. Must be at least 6 characters long")
 
+    def valid_form(self):
+        return {'first_name': 'JJ',
+                'last_name': 'Goatl',
+                'username': 'jj',
+                'password': 'svm@43',
+                'email': 'cool@email.com'}
+
     def test_form_correct_form_is_invalid(self):
-        form_input = {'first_name': 'JJ',
-                      'last_name': 'Goatl',
-                      'username': 'jj',
-                      'password': 'svm@43',
-                      'email': 'cool@email.com'}
+        form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)
 
         response = SignUpView.as_view()(request)
@@ -92,7 +95,13 @@ class SignUpTests(TestCase):
         self.assertIsInstance(response, HttpResponseRedirect)
 
     def test_form_correct_user_is_created(self):
-        pass
+        form_input = self.valid_form()
+        request = self.factory.post('ask/signup', data=form_input)
+
+        response = SignUpView.as_view()(request)
+
+        o = User.objects.filter(username='jj')
+        self.assertEqual(o[0].first_name, 'JJ')
 
 
 """

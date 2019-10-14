@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest
+from django.shortcuts import render
 from django.views.generic.edit import FormView
 
 from .forms import SignUpForm
@@ -14,8 +15,13 @@ class SignUpView(FormView):
     form_class = SignUpForm
     success_url = 'ask/user.html'
 
+    def form_to_model(self, form):
+        clean_data = form.cleaned_data
+        return User(**clean_data)
+
     def form_valid(self, form):
-        # do something
+        user = self.form_to_model(form)
+        user.save()
         return super().form_valid(form)
 
 
