@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
 from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render
 from django.views.generic.edit import FormView
+# from django.urls import reverse
 
 from .forms import SignUpForm
 
@@ -10,10 +12,17 @@ def index(request):
     return render(request, "ask/index.html")
 
 
+class CustomLoginView(LoginView):
+
+    def form_valid(self, form):
+        self.request.session['logged_in'] = True
+        return super().form_valid(form)
+
+
 class SignUpView(FormView):
     template_name = 'ask/signup.html'
     form_class = SignUpForm
-    success_url = 'ask/user'
+    success_url = 'user'
 
     def form_valid(self, form):
         user = self.form_to_model(form)
@@ -26,6 +35,18 @@ class SignUpView(FormView):
         del clean_data['terms']
         del clean_data['privacy']
         return User(**clean_data)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            request.session['logged_in'] = True
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 def user_profile(request):

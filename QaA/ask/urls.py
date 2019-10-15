@@ -1,12 +1,13 @@
 from django.urls import path
-from django.contrib.auth.views import LoginView, TemplateView
+from django.contrib.auth.views import TemplateView
 
 from . import views
 
 app_name = "ask"
 urlpatterns = [
     path('', views.index, name='index'),
-    path('login', LoginView.as_view(template_name='ask/login.html'), name='login'),
+    path('login', views.CustomLoginView.as_view(
+        template_name='ask/login.html'), name='login'),
     path('signup', views.SignUpView.as_view(), name='signup'),
     path('user', views.user_profile, name='user'),
     path('terms', TemplateView.as_view(

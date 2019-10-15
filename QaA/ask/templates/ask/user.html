@@ -5,5 +5,10 @@
 {% endblock %}
 
 {%block content %}
-Your profile
+<p>Your profile</p>
+{% if request.session.logged_in %}
+<p>You're logged in</p>
+{% else %}
+<p>You're not logged in</p>
+{% endif %}
 {% endblock content %}
