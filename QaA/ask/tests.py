@@ -186,6 +186,7 @@ class SignUpTests(TestCase):
     def test_form_correct_user_redirected(self):
         form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)
+        request.session = {}
 
         response = SignUpView.as_view()(request)
 
@@ -195,11 +196,30 @@ class SignUpTests(TestCase):
     def test_form_correct_user_is_created(self):
         form_input = self.valid_form()
         request = self.factory.post('ask/signup', data=form_input)
+        request.session = {}
 
         response = SignUpView.as_view()(request)
 
         queryset = User.objects.filter(username='jj')
         self.assertEqual(queryset[0].first_name, 'JJ')
+
+    def test_form_correct_user_is_logged_in_session(self):
+        form_input = self.valid_form()
+        request = self.factory.post('ask/signup', data=form_input, )
+        request.session = {}
+
+        response = SignUpView.as_view()(request)
+
+        self.assertEqual(request.session['logged_in'], True)
+
+    def test_form_correct_username_is_stored_in_session(self):
+        form_input = self.valid_form()
+        request = self.factory.post('ask/signup', data=form_input, )
+        request.session = {}
+
+        response = SignUpView.as_view()(request)
+
+        self.assertEqual(request.session['username'], 'jj')
 
     def valid_form(self):
         return {'first_name': 'JJ',
@@ -210,10 +230,3 @@ class SignUpTests(TestCase):
                 'email': 'some1@email.com',
                 'terms': 'True',
                 'privacy': 'True'}
-
-
-"""
-TO DO:
-Terms of service
-Privacy policy
-"""

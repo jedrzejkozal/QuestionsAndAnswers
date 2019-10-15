@@ -1,9 +1,8 @@
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render
 from django.views.generic.edit import FormView
-# from django.urls import reverse
 
 from .forms import SignUpForm
 
@@ -16,7 +15,16 @@ class CustomLoginView(LoginView):
 
     def form_valid(self, form):
         self.request.session['logged_in'] = True
+        self.request.session['username'] = form.cleaned_data['username']
         return super().form_valid(form)
+
+
+class CustomLogoutView(LogoutView):
+
+    def post(self, request, *args, **kwargs):
+        del request['logged_in']
+        del request['username']
+        super().post(request, *args, **kwargs)
 
 
 class SignUpView(FormView):
@@ -44,6 +52,7 @@ class SignUpView(FormView):
         form = self.get_form()
         if form.is_valid():
             request.session['logged_in'] = True
+            request.session['username'] = form.cleaned_data['username']
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -51,3 +60,7 @@ class SignUpView(FormView):
 
 def user_profile(request):
     return render(request, "ask/user.html")
+
+
+def logout(request):
+    pass

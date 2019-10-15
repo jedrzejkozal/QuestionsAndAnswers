@@ -2,15 +2,20 @@
 <html>
 
 <head>
-    {% block sitetitle %}
+    {% block site_title %}
     <title>Question and Answers</title>
-    {% endblock sitetitle %}
+    {% endblock site_title %}
 </head>
 
 <body>
     <nav>
+        {% if request.session.logged_in %}
+        <p>Logged in as {{request.session.username}}</p>
+        <a href="./logout"><input type="button" value="Log Out"></a>
+        {% else %}
         <a href="./login"><input type="button" value="Log In"></a>
         <a href="./signup"><input type="button" value="Sign Up"></a>
+        {% endif %}
     </nav>
     {% block content %}
     <main>
