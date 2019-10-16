@@ -29,7 +29,11 @@
     </div>
     <nav>
         <a>My questions</a>
-        <a>Unanswered questions</a>
+        {% if num_unanswered > 0 %}
+            <a>Unanswered questions({{num_unanswered}})</a>
+        {% else %}
+            <a>Unanswered questions</a>
+        {% endif %}
         <a>Friends</a>
         <a>Messages</a>
         <a>Profile Settings</a>
