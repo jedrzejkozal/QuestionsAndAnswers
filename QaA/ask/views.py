@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
-from django.http.response import HttpResponseBadRequest
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.edit import FormView
+from django.views.generic.base import View
 
 from .forms import SignUpForm
 
@@ -58,9 +59,18 @@ class SignUpView(FormView):
             return self.form_invalid(form)
 
 
-def user_profile(request):
-    return render(request, "ask/user.html")
+class UserView(View):
 
+    def get(self, request):
+        if not self.is_user_logged_in(request.session):
+            return HttpResponseRedirect("ask/login.html")
+        return render(request, "ask/user.html")
 
-def logout(request):
-    pass
+    def is_user_logged_in(self, session):
+        try:
+            if session['logged_in'] == False:
+                return False
+        except KeyError:
+            return False
+        else:
+            return True
