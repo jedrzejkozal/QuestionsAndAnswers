@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% block site_title %}
+    <title>Question and Answers</title>
+    {% endblock site_title %}
+    <link rel="stylesheet" type="text/css" href="{% static 'ask/login_bar.css' %}">
+</head>
+
+<body>
+    <div class="bar">
+        {% if request.session.logged_in %}
+        <a class="logged_in_as">Logged in as: <b>{{request.session.username}}</b></a>
+        <a href="./logout"><input type="button" class="second_button" value="Log Out"></a>
+        {% else %}
+        <a href="./login"><input type="button" class="first_button" value="Log In"></a>
+        <a href="./signup"><input type="button" class="second_button" value="Sign Up"></a>
+        {% endif %}
+    </div>
+    <br>
+    {% block content %}
+    <main>
+        <h1>Welcome to Question and Answers</h1>
+        <p>Site where you can find all the answers</p>
+    </main>
+    {% endblock content %}
+</body>
+
+</html>
