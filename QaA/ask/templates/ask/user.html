@@ -1,14 +1,32 @@
 {% extends "ask/login_bar.html" %}
+{% load static %}
 
 {% block site_title %}
 <title>Profile</title>
 {% endblock site_title %}
 
+{%block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ask/user.css' %}">
+{% endblock styles %}
+
 {%block content %}
-<p>Your profile</p>
-{% if request.session.logged_in %}
-<p>You're logged in</p>
-{% else %}
-<p>You're not logged in</p>
-{% endif %}
+<main>
+    <div class="questions">
+        <div class="question_block">
+            <p class="question">Question 1</p>
+            <p class="answer">Answer 1</p>
+        </div>
+        <div class="question_block">
+            <p class="question">Question 2</p>
+            <p class="answer">Answer 2</p>
+        </div>
+    </div>
+    <nav>
+        <a>My questions</a>
+        <a>Unanswered questions</a>
+        <a>Friends</a>
+        <a>Messages</a>
+        <a>Profile Settings</a>
+    </nav>
+</main>
 {% endblock content %}
