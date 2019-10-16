@@ -5,6 +5,8 @@ from django.shortcuts import render
 from django.views.generic.edit import FormView
 from django.views.generic.base import View
 
+from .models import QuestionModel, AnswerModel
+
 from .forms import SignUpForm
 
 
@@ -64,7 +66,8 @@ class UserView(View):
     def get(self, request):
         if not self.is_user_logged_in(request.session):
             return HttpResponseRedirect("ask/login.html")
-        return render(request, "ask/user.html")
+        context = self.get_context(request)
+        return render(request, "ask/user.html", context=context)
 
     def is_user_logged_in(self, session):
         try:
@@ -74,3 +77,25 @@ class UserView(View):
             return False
         else:
             return True
+
+    def get_context(self, request):
+        user_id = request.session['_auth_user_id']
+        questions_with_answers = self.get_answered_questions_with_answers(
+            user_id)
+        num_unanswered = self.get_num_unanswered(user_id)
+        context = {"questions_with_answers": questions_with_answers,
+                   "num_unanswered": num_unanswered}
+        return context
+
+    def get_answered_questions_with_answers(self, user_id):
+        user = User.objects.get(pk=user_id)
+        answered_questions = QuestionModel.objects.filter(
+            owner=user).exclude(answer=None).order_by('date')[::-1]
+        answers = [question.answer for question in answered_questions]
+        return list(zip(answered_questions, answers))
+
+    def get_num_unanswered(self, user_id):
+        user = User.objects.get(pk=user_id)
+        unanswered_questions = QuestionModel.objects.filter(
+            owner=user).filter(answer=None)
+        return len(unanswered_questions)
