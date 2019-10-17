@@ -12,6 +12,7 @@ urlpatterns = [
         template_name='ask/logout.html'), name='logout'),
     path('signup', views.SignUpView.as_view(), name='signup'),
     path('profile', views.ProfileView.as_view(), name='profile'),
+    path('user/<str:username>', views.UserView.as_view(), name='user'),
     path('terms', TemplateView.as_view(
         template_name='ask/terms.html'), name='terms'),
     path('privacypolicy', TemplateView.as_view(

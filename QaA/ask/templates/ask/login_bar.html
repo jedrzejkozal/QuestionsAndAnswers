@@ -22,12 +22,15 @@
         {% endif %}
     </div>
     <br>
-    {% block content %}
     <main>
+    {% block content %}
         <h1>Welcome to Question and Answers</h1>
         <p>Site where you can find all the answers</p>
-    </main>
     {% endblock content %}
+    {% block nav %}
+    
+    {% endblock nav %}
+    </main>
 </body>
 
 </html>

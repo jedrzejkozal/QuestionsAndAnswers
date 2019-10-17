@@ -1,0 +1,20 @@
+main {
+    display: grid;
+    grid-template-columns: 75% 25%;
+    height: 100%;
+}
+
+nav{
+    border: 5px black;
+    background-color: beige;
+    width: 100%;
+    height: 100vh;
+    display: fixed;
+}
+
+nav a {
+    font-weight: bold;
+    font-size: 14px;
+    margin: 20px;
+    display: block;
+}

@@ -1,0 +1,20 @@
+{% extends "ask/login_bar.html" %} 
+{% load static %}   
+
+{%block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ask/navigation_bar.css' %}">
+{% endblock styles %}
+
+{% block nav %}
+<nav>
+    <a>My Profile</a>
+    {% if num_unanswered > 0 %}
+        <a>Unanswered questions({{num_unanswered}})</a>
+    {% else %}
+        <a>Unanswered questions</a>
+    {% endif %}
+    <a>Friends</a>
+    <a>Messages</a>
+    <a>Settings</a>
+</nav>
+{% endblock nav %}

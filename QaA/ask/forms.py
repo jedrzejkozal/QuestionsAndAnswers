@@ -38,3 +38,7 @@ class SignUpForm(forms.Form):
         if password != password_repeat:
             raise forms.ValidationError('Password does not match')
         return password_repeat
+
+
+class QuestionForm(forms.Form):
+    question_content = forms.CharField(max_length=1000, required=True)

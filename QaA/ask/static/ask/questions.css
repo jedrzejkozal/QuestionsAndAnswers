@@ -1,0 +1,24 @@
+.questions {
+    width: 100%;
+    background-color: rgb(224, 213, 213);
+}
+
+.question_block {
+    display: grid;
+    background-color: beige;
+    width: 85%;
+    min-height: 100px;
+    margin: 30px 40px;
+    border-radius: 10px;
+}
+
+.question {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 5px 20px 0px 20px;
+}
+
+.answer {
+    font-size: 15px;
+    margin: 0px 20px 5px 20px;
+}

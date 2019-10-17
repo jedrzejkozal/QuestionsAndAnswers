@@ -1,17 +1,29 @@
 {% extends "ask/navigation_bar.html" %}
 {% load static %}
 
-{% block site_title %}
-<title>Profile</title>
-{% endblock site_title %}
-
 {%block styles %}
 <link rel="stylesheet" type="text/css" href="{% static 'ask/navigation_bar.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'ask/questions.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'ask/profile.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'ask/user.css' %}">
 {% endblock styles %}
 
-{%block content %}
+{% block content %}
+<div class="questions">
+    <div class="question_user_block">
+        <p class="username">{{username}} profile</p>
+    </div>
+    {% if request.session.logged_in %}
+    <div class="ask_question">
+        <form method="POST" action="{% url 'ask:user' username %}">
+            {% csrf_token %}
+            <a class="prompt">Ask some question:</a>
+            <input type="textarea" class="question_textbox" id="question_content" name="question_content" required>
+            <br>
+            <input type="submit" class="question_submit" value="Ask">
+        </form>
+    </div>
+    <div class="bar_placeholder"></div>
+    {% endif %}
     <div class="questions">
         <div class="question_block">
             <p class="question">Question 1</p>
@@ -28,4 +40,5 @@
         </div>
         {% endfor %}
     </div>
+</div>
 {% endblock content %}

@@ -7,7 +7,7 @@ from django.views.generic.base import View
 
 from .models import QuestionModel, AnswerModel
 
-from .forms import SignUpForm
+from .forms import SignUpForm, QuestionForm
 
 
 def index(request):
@@ -80,15 +80,15 @@ class ProfileView(View):
 
     def get_context(self, request):
         user_id = request.session['_auth_user_id']
+        user = User.objects.get(pk=user_id)
         questions_with_answers = self.get_answered_questions_with_answers(
-            user_id)
+            user)
         num_unanswered = self.get_num_unanswered(user_id)
         context = {"questions_with_answers": questions_with_answers,
                    "num_unanswered": num_unanswered}
         return context
 
-    def get_answered_questions_with_answers(self, user_id):
-        user = User.objects.get(pk=user_id)
+    def get_answered_questions_with_answers(self, user):
         answered_questions = QuestionModel.objects.filter(
             owner=user).exclude(answer=None).order_by('date')[::-1]
         answers = [question.answer for question in answered_questions]
@@ -99,3 +99,35 @@ class ProfileView(View):
         unanswered_questions = QuestionModel.objects.filter(
             owner=user).filter(answer=None)
         return len(unanswered_questions)
+
+
+class UserView(FormView):
+    form_class = QuestionForm
+
+    def get(self, request, username):
+        context = self.get_user_questions(username)
+        return render(request, "ask/user.html", context=context)
+
+    def post(self, request, username):
+        form = self.get_form()
+        context = self.get_user_questions(username)
+        if form.is_valid():
+            self.create_question(
+                username, request.session['_auth_user_id'], form.cleaned_data['question_content'])
+            context['question_submitted'] = "Your question was submitted"
+        return render(request, "ask/user.html", context=context)
+
+    def get_user_questions(self, username):
+        user = User.objects.get(username=username)
+        questions_with_answers = ProfileView().get_answered_questions_with_answers(user)
+        context = {'username': username,
+                   "questions_with_answers": questions_with_answers}
+        return context
+
+    def create_question(self, owner_username, logedin_user_id, content):
+        asked_by = User.objects.filter(pk=logedin_user_id)[0]
+        owner = User.objects.filter(username=owner_username)[0]
+        question = QuestionModel(owner=owner,
+                                 asked_by=asked_by,
+                                 content=content)
+        question.save()
