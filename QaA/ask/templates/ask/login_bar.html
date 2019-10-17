@@ -15,10 +15,10 @@
     <div class="bar">
         {% if request.session.logged_in %}
         <a class="logged_in_as">Logged in as: <b>{{request.session.username}}</b></a>
-        <a href="./logout"><input type="button" class="second_button" value="Log Out"></a>
+        <a href={% url "ask:logout" %}><input type="button" class="second_button" value="Log Out"></a>
         {% else %}
-        <a href="./login"><input type="button" class="first_button" value="Log In"></a>
-        <a href="./signup"><input type="button" class="second_button" value="Sign Up"></a>
+        <a href={% url "ask:login" %}><input type="button" class="first_button" value="Log In"></a>
+        <a href={% url "ask:signup" %}><input type="button" class="second_button" value="Sign Up"></a>
         {% endif %}
     </div>
     <br>

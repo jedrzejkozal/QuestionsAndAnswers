@@ -33,7 +33,7 @@ class CustomLogoutView(LogoutView):
 class SignUpView(FormView):
     template_name = 'ask/signup.html'
     form_class = SignUpForm
-    success_url = 'user'
+    success_url = 'profile'
 
     def form_valid(self, form):
         user = self.form_to_model(form)
@@ -61,13 +61,13 @@ class SignUpView(FormView):
             return self.form_invalid(form)
 
 
-class UserView(View):
+class ProfileView(View):
 
     def get(self, request):
         if not self.is_user_logged_in(request.session):
             return HttpResponseRedirect("ask/login.html")
         context = self.get_context(request)
-        return render(request, "ask/user.html", context=context)
+        return render(request, "ask/profile.html", context=context)
 
     def is_user_logged_in(self, session):
         try:
