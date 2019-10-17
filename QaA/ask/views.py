@@ -131,3 +131,7 @@ class UserView(FormView):
                                  asked_by=asked_by,
                                  content=content)
         question.save()
+
+
+class UnansweredView(FormView):
+    pass

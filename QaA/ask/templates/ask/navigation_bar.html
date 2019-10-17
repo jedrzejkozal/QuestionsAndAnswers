@@ -1,5 +1,5 @@
-{% extends "ask/login_bar.html" %} 
-{% load static %}   
+{% extends "ask/login_bar.html" %}
+{% load static %}
 
 {%block styles %}
 <link rel="stylesheet" type="text/css" href="{% static 'ask/navigation_bar.css' %}">
@@ -7,11 +7,11 @@
 
 {% block nav %}
 <nav>
-    <a>My Profile</a>
+    <a href="{% url 'ask:profile' %}">My Profile</a>
     {% if num_unanswered > 0 %}
-        <a>Unanswered questions({{num_unanswered}})</a>
+    <a href="{% url 'ask:unanswered' %}">Unanswered questions({{num_unanswered}})</a>
     {% else %}
-        <a>Unanswered questions</a>
+    <a>Unanswered questions</a>
     {% endif %}
     <a>Friends</a>
     <a>Messages</a>
