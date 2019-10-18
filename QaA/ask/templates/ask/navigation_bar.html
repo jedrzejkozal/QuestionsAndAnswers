@@ -11,7 +11,7 @@
     {% if num_unanswered > 0 %}
     <a href="{% url 'ask:unanswered' %}">Unanswered questions({{num_unanswered}})</a>
     {% else %}
-    <a>Unanswered questions</a>
+    <a href="{% url 'ask:unanswered' %}">Unanswered questions</a>
     {% endif %}
     <a>Friends</a>
     <a>Messages</a>
