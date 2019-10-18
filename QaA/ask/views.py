@@ -60,7 +60,6 @@ class SignUpView(FormView):
     def log_in(self, username, password, request):
         user = authenticate(request, username=username, password=password)
         if user:
-            # request.user = user
             login(request, user)
 
         request.session['logged_in'] = True
