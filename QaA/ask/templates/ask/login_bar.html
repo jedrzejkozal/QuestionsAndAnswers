@@ -4,7 +4,7 @@
 
 <head>
     {% block site_title %}
-    <title>Question and Answers</title>
+    <title>Questions and Answers</title>
     {% endblock site_title %}
     <link rel="stylesheet" type="text/css" href="{% static 'ask/login_bar.css' %}">
     {% block styles %}
@@ -13,6 +13,8 @@
 
 <body>
     <div class="bar">
+        <a class="logo" href="{% url 'ask:index' %}">Questions & Answers</a>
+        <a></a>
         {% if request.session.logged_in %}
         <a class="logged_in_as">Logged in as: <b>{{request.session.username}}</b></a>
         <a href={% url "ask:logout" %}><input type="button" class="second_button" value="Log Out"></a>
@@ -23,13 +25,13 @@
     </div>
     <br>
     <main>
-    {% block content %}
-        <h1>Welcome to Question and Answers</h1>
+        {% block content %}
+        <h1>Welcome to Questions and Answers</h1>
         <p>Site where you can find all the answers</p>
-    {% endblock content %}
-    {% block nav %}
-    
-    {% endblock nav %}
+        {% endblock content %}
+        {% block nav %}
+
+        {% endblock nav %}
     </main>
 </body>
 
