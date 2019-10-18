@@ -1,0 +1,30 @@
+{% extends "ask/navigation_bar.html" %}
+{% load static %}
+
+{%block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ask/navigation_bar.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'ask/questions.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'ask/unanswered.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<div class="questions">
+    {% if unanswered_questions %}
+    {% for question in unanswered_questions %}
+    <div class="question_block">
+        <p class="question">{{ question.content }}</p>
+        <form method="POST" action="{% url 'ask:unanswered' %}">
+            {% csrf_token %}
+            <input type="text" class="answer_textbox" name="answer_content" required>
+            <input type="hidden" name="question_id" value={{question.id}} required>
+            <input type="submit" class="answer_submit" value="Answer">
+        </form>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="question_block">
+        <p class="no_unanswered">No unanswered questions</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

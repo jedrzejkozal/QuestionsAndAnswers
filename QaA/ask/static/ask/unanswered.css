@@ -1,0 +1,16 @@
+.answer_textbox {
+    min-height: 100px;
+    width: 70%;
+    margin: 2px 15% 2px 15%;
+}
+
+.answer_submit {
+    width: 14%;
+    margin: 0px 15% 5px 72%;
+}
+
+.no_unanswered {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 10px 20px;
+}

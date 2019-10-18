@@ -8,7 +8,7 @@ from django.contrib.auth import login, authenticate
 
 from .models import QuestionModel, AnswerModel
 
-from .forms import SignUpForm, QuestionForm
+from .forms import SignUpForm, QuestionForm, AnswerForm
 
 
 def index(request):
@@ -66,7 +66,21 @@ class SignUpView(FormView):
         request.session['username'] = username
 
 
-class ProfileView(View):
+class QuestionsMixIn:
+
+    def questions_with_answers(self, user):
+        answered_questions = QuestionModel.objects.filter(
+            owner=user).exclude(answer=None).order_by('date')[::-1]
+        answers = [question.answer for question in answered_questions]
+        return list(zip(answered_questions, answers))
+
+    def unanswered_questions(self, user):
+        unanswered_questions = QuestionModel.objects.filter(
+            owner=user).filter(answer=None)
+        return unanswered_questions
+
+
+class ProfileView(View, QuestionsMixIn):
 
     def get(self, request):
         if not self.is_user_logged_in(request.session):
@@ -86,27 +100,20 @@ class ProfileView(View):
     def get_context(self, request):
         user_id = request.session['_auth_user_id']
         user = User.objects.get(pk=user_id)
-        questions_with_answers = self.get_answered_questions_with_answers(
+        questions_with_answers = self.questions_with_answers(
             user)
         num_unanswered = self.get_num_unanswered(user_id)
         context = {"questions_with_answers": questions_with_answers,
                    "num_unanswered": num_unanswered}
         return context
 
-    def get_answered_questions_with_answers(self, user):
-        answered_questions = QuestionModel.objects.filter(
-            owner=user).exclude(answer=None).order_by('date')[::-1]
-        answers = [question.answer for question in answered_questions]
-        return list(zip(answered_questions, answers))
-
     def get_num_unanswered(self, user_id):
         user = User.objects.get(pk=user_id)
-        unanswered_questions = QuestionModel.objects.filter(
-            owner=user).filter(answer=None)
+        unanswered_questions = self.unanswered_questions(user)
         return len(unanswered_questions)
 
 
-class UserView(FormView):
+class UserView(FormView, QuestionsMixIn):
     form_class = QuestionForm
 
     def get(self, request, username):
@@ -124,7 +131,7 @@ class UserView(FormView):
 
     def get_user_questions(self, username):
         user = User.objects.get(username=username)
-        questions_with_answers = ProfileView().get_answered_questions_with_answers(user)
+        questions_with_answers = self.questions_with_answers(user)
         context = {'username': username,
                    "questions_with_answers": questions_with_answers}
         return context
@@ -138,5 +145,31 @@ class UserView(FormView):
         question.save()
 
 
-class UnansweredView(FormView):
-    pass
+class UnansweredView(FormView, QuestionsMixIn):
+    form_class = AnswerForm
+
+    def get(self, request):
+        user = User.objects.filter(pk=request.session['_auth_user_id'])[0]
+        unanswered_questions = self.unanswered_questions(user)
+        unanswered_questions = unanswered_questions.order_by('date')[::-1]
+        context = {'unanswered_questions': unanswered_questions}
+        return render(request, 'ask/unanswered.html', context=context)
+
+    def post(self, request):
+        form = self.get_form()
+        if form.is_valid():
+            answer = self.create_answer(form.cleaned_data['answer_content'])
+            self.attach_answer_to_question(
+                answer, form.cleaned_data['question_id'])
+
+        return self.get(request)
+
+    def create_answer(self, content):
+        answer = AnswerModel(content=content)
+        answer.save()
+        return answer
+
+    def attach_answer_to_question(self, answer, user_id):
+        question = QuestionModel.objects.get(id=user_id)
+        question.answer = answer
+        question.save()

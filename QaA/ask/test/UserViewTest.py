@@ -153,9 +153,3 @@ class UserViewTest(TestCase, QuestionsMixIn):
     def get_valid_form(self):
         form = {'question_content': 'question test content'}
         return form
-
-
-"""
-TO DO
-form is invalid, user not created
-"""

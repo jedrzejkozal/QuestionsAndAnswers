@@ -42,3 +42,8 @@ class SignUpForm(forms.Form):
 
 class QuestionForm(forms.Form):
     question_content = forms.CharField(max_length=1000, required=True)
+
+
+class AnswerForm(forms.Form):
+    answer_content = forms.CharField(max_length=1000, required=True)
+    question_id = forms.IntegerField(required=True)
