@@ -59,9 +59,7 @@ class SignUpView(FormView):
 
     def log_in(self, username, password, request):
         user = authenticate(request, username=username, password=password)
-        print('\nauthenticate user ', user)
         if user:
-            print('\nauthenticate call reutrned user')
             # request.user = user
             login(request, user)
 
@@ -72,7 +70,6 @@ class SignUpView(FormView):
 class ProfileView(View):
 
     def get(self, request):
-        print('_auth_user_id', request.session['_auth_user_id'])
         if not self.is_user_logged_in(request.session):
             return HttpResponseRedirect("ask/login.html")
         context = self.get_context(request)
