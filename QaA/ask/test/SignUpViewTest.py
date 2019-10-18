@@ -221,6 +221,15 @@ class SignUpTests(TestCase):
 
         self.assertEqual(request.session['username'], 'jj')
 
+    def test_form_correct_user_id_is_stored_in_session(self):
+        form_input = self.valid_form()
+        request = self.factory.post('ask/signup', data=form_input, )
+        request.session = {}
+
+        response = SignUpView.as_view()(request)
+
+        self.assertEqual(request.session['_auth_user_id'], 1)
+
     def valid_form(self):
         return {'first_name': 'JJ',
                 'last_name': 'Goatl',

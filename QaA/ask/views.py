@@ -4,6 +4,7 @@ from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.edit import FormView
 from django.views.generic.base import View
+from django.contrib.auth import login, authenticate
 
 from .models import QuestionModel, AnswerModel
 
@@ -35,35 +36,43 @@ class SignUpView(FormView):
     form_class = SignUpForm
     success_url = 'profile'
 
-    def form_valid(self, form):
-        user = self.form_to_model(form)
-        user.save()
-        return super().form_valid(form)
-
-    def form_to_model(self, form):
-        clean_data = form.cleaned_data
-        del clean_data['password_repeat']
-        del clean_data['terms']
-        del clean_data['privacy']
-        return User(**clean_data)
-
     def post(self, request, *args, **kwargs):
-        """
-        Handle POST requests: instantiate a form instance with the passed
-        POST variables and then check if it's valid.
-        """
         form = self.get_form()
         if form.is_valid():
-            request.session['logged_in'] = True
-            request.session['username'] = form.cleaned_data['username']
+            user = self.form_to_model(form)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            self.log_in(user.username, form.cleaned_data['password'], request)
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def form_to_model(self, form):
+        clean_data = form.cleaned_data
+        userdata = {
+            'first_name': clean_data['first_name'],
+            'last_name': clean_data['last_name'],
+            'username': clean_data['username'],
+            'email': clean_data['email'],
+        }
+        return User(**userdata)
+
+    def log_in(self, username, password, request):
+        user = authenticate(request, username=username, password=password)
+        print('\nauthenticate user ', user)
+        if user:
+            print('\nauthenticate call reutrned user')
+            # request.user = user
+            login(request, user)
+
+        request.session['logged_in'] = True
+        request.session['username'] = username
 
 
 class ProfileView(View):
 
     def get(self, request):
+        print('_auth_user_id', request.session['_auth_user_id'])
         if not self.is_user_logged_in(request.session):
             return HttpResponseRedirect("ask/login.html")
         context = self.get_context(request)
