@@ -53,6 +53,9 @@ class QuestionsMixIn:
         self.answer3.save()
 
     def login_user(self, user_id=2):
+        user = UserModel.objects.get(pk=user_id)
+        self.client.force_login(user)
+
         session = self.client.session
         session['logged_in'] = True
         session['_auth_user_id'] = user_id

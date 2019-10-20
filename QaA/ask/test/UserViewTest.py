@@ -10,18 +10,21 @@ class UserViewTest(TestCase, QuestionsMixIn):
 
     def test_context_contains_viewed_user_username(self):
         self.create_users()
+        self.login_user(user_id=2)
         response = self.client.get(self.url)
 
         self.assertEqual(response.context['username'], 'TestUser2')
 
     def test_username_is_redered_in_template(self):
         self.create_users()
+        self.login_user(user_id=2)
         response = self.client.get(self.url)
 
         self.assertContains(response, 'TestUser2')
 
     def test_context_contains_user_questions(self):
         self.create_users()
+        self.login_user(user_id=2)
         self.create_question1(with_answer=True)
 
         response = self.client.get(self.url)
@@ -32,6 +35,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
 
     def test_context_multiple_questions_are_ordered_by_newest(self):
         self.create_users()
+        self.login_user(user_id=2)
         self.create_question1(with_answer=True)
         self.create_question2(with_answer=True)
 
@@ -43,6 +47,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
 
     def test_questions_of_other_users_are_not_in_query(self):
         self.create_users()
+        self.login_user(user_id=2)
         self.create_question1(with_answer=True)
         self.create_question3(with_answer=True)
 
@@ -54,6 +59,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
 
     def test_only_answered_questions_are_in_query(self):
         self.create_users()
+        self.login_user(user_id=2)
         self.create_question1(with_answer=True)
         self.create_question2()
 
@@ -64,6 +70,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
 
     def test_template_rendered_with_questions_contents(self):
         self.create_users()
+        self.login_user(user_id=2)
         self.create_question1(with_answer=True)
         self.create_question2(with_answer=True)
 
@@ -74,6 +81,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
 
     def test_template_rendered_with_answer_contents(self):
         self.create_users()
+        self.login_user(user_id=2)
         self.create_question1(with_answer=True)
 
         response = self.client.get(self.url)

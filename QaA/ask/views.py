@@ -137,7 +137,8 @@ class UserView(FormView, QuestionsMixIn):
 
     def post(self, request, username):
         form = self.get_form()
-        context = self.get_user_questions(username)
+        context = self.get_user_questions(
+            request.session['_auth_user_id'], username)
         if form.is_valid():
             self.create_question(
                 username, request.session['_auth_user_id'], form.cleaned_data['question_content'])
