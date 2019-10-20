@@ -131,13 +131,13 @@ class UserView(FormView, QuestionsMixIn):
     form_class = QuestionForm
 
     def get(self, request, username):
-        context = self.get_user_questions(
+        context = self.get_context(
             request.session['_auth_user_id'], username)
         return render(request, "ask/user.html", context=context)
 
     def post(self, request, username):
         form = self.get_form()
-        context = self.get_user_questions(
+        context = self.get_context(
             request.session['_auth_user_id'], username)
         if form.is_valid():
             if form.cleaned_data['action'] == 'ask_question':
@@ -154,12 +154,32 @@ class UserView(FormView, QuestionsMixIn):
         return render(request, "ask/user.html", context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context
-    def get_user_questions(self, user_id, username):
-        user = UserModel.objects.get(username=username)
-        questions_with_answers = self.questions_with_answers(user)
-        context = {'username': username,
-                   "questions_with_answers": questions_with_answers}
+    def get_context(self, logedin_user_id, username):
+        viewed_user = UserModel.objects.get(username=username)
+        questions_with_answers = self.questions_with_answers(viewed_user)
+        context = {
+            'username': username,
+            'questions_with_answers': questions_with_answers,
+            'is_friend': self.is_friend(logedin_user_id, viewed_user),
+        }
         return context
+
+    def is_friend(self, logedin_user_id, viewed_user):
+        logedin_user = UserModel.objects.get(pk=logedin_user_id)
+
+        try:
+            friends = FriendsModel.objects.get(
+                first=logedin_user, second=viewed_user)
+        except FriendsModel.DoesNotExist:
+            try:
+                friends = FriendsModel.objects.get(
+                    first=viewed_user, second=logedin_user)
+            except FriendsModel.DoesNotExist:
+                return False
+            else:
+                return True
+        else:
+            return True
 
     def create_question(self, owner_username, logedin_user_id, content):
         asked_by = UserModel.objects.filter(pk=logedin_user_id)[0]

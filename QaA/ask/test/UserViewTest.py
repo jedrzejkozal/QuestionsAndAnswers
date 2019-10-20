@@ -90,6 +90,34 @@ class UserViewTest(TestCase, QuestionsMixIn):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "42")
 
+    def test_GET_users_are_not_friends_is_friend_in_context_equals_False(self):
+        self.create_users()
+        self.login_user(user_id=1)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['is_friend'], False)
+
+    def test_GET_friends_table_exist_is_friend_in_context_equals_True(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friends = FriendsModel(first=self.test_user1, second=self.test_user2)
+        friends.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['is_friend'], True)
+
+    def test_GET_friends_table_exist_is_friend_in_context_equals_True_symmetrical(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friends = FriendsModel(first=self.test_user2, second=self.test_user1)
+        friends.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['is_friend'], True)
+
     def test_POST_new_question_is_created_in_database(self):
         self.create_users()
         self.login_user(user_id=1)
