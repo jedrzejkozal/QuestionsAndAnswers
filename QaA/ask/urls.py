@@ -19,6 +19,7 @@ urlpatterns = [
     path('user/<str:username>', views.UserView.as_view(), name='user'),
     path('unanswered', views.UnansweredView.as_view(), name='unanswered'),
     path('friends', views.FriendsView.as_view(), name='friends'),
-    path('frieds/recent', views.FriendsView.as_view(), name='friends.recent'),
-    path('frieds/alph', views.FriendsView.as_view(), name='friends.alph'),
+    path('friends/recent', views.FriendsView.as_view(), name='friends.recent'),
+    path('friends/alph', views.FriendsView.as_view(), name='friends.alph'),
+    path('friends/inv', views.FriendsView.as_view(), name="friends.inv"),
 ]

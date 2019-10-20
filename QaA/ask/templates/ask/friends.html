@@ -13,6 +13,7 @@
         <div class="menu">
             <a href="{% url 'ask:friends.recent' %}" class="item">Recently added</a>
             <a href="{% url 'ask:friends.alph' %}" class="item">Alphabetical order</a>
+            <a href="{% url 'ask:friends.inv' %}" class="item">Invitations</a>
             <a></a>
             <form method="GET" action="{% url 'ask:friends' %}">
                 <a class="search_text">Search: </a>
@@ -20,6 +21,28 @@
             </form>
         </div>
         <hr>
+        {% if show_invites %}
+        <div class="friends_container">
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            {% for user in invitations %}
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">{{user.username}}</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="friends_container">
             <div class="friend">
                 <img src="https://via.placeholder.com/100" class="avatar">
@@ -44,10 +67,11 @@
             {% for friend in friends %}
             <div class="friend">
                 <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">{{firend.username}}</a>
+                <br><a class="username">{{friend.username}}</a>
             </div>
             {% endfor %}
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}

@@ -247,16 +247,22 @@ class FriendsView(View, QuestionsMixIn):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     def get_context(self, user, request):
-        friends = self.order_based_on_request(request, user)
-        context = {"friends": friends}
-        return context
-
-    def order_based_on_request(self, request, user):
         last_token = request.path.split('/')[-1]
 
-        if last_token == 'recent':
+        if last_token == 'inv':
+            context = {
+                'show_invites': True,
+                'invitations': self.user_friends(user, accepted=False),
+            }
+        else:
+            friends = self.friends_ordered(user, last_token)
+            context = {"friends": friends}
+        return context
+
+    def friends_ordered(self, user, request_type):
+        if request_type == 'recent':
             return self.order_by_date(user)[::-1]
-        elif last_token == 'alph':
+        elif request_type == 'alph':
             return self.order_by_alphabet(user)
         else:
             return self.user_friends(user)
@@ -275,7 +281,13 @@ class FriendsView(View, QuestionsMixIn):
         friends.sort(key=lambda f: f.username)
         return friends
 
-    def user_friends(self, user):
-        friends = user.friends.all()
+    def user_friends(self, user, accepted=True):
+        friends = list(user.friends.all())
         second_friends = [f.first for f in user.friends_second.all()]
-        return list(friends) + second_friends
+        friends_accepted = [f.accepted for f in user.friendsmodel_set.all()]
+        second_accepted = [f.accepted for f in user.friends_second.all()]
+        friends_with_accepted = list(
+            zip(friends + second_friends, friends_accepted + second_accepted))
+        filtered = filter(lambda t: t[1] == accepted, friends_with_accepted)
+
+        return [f[0] for f in filtered]
