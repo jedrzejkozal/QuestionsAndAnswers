@@ -8,7 +8,7 @@ from django.views.generic.edit import FormView
 from django.shortcuts import reverse
 
 from .forms import AnswerForm, QuestionForm, SignUpForm
-from .models import UserModel, AnswerModel, QuestionModel
+from .models import UserModel, AnswerModel, QuestionModel, FriendsModel
 
 
 def index(request):
@@ -140,9 +140,17 @@ class UserView(FormView, QuestionsMixIn):
         context = self.get_user_questions(
             request.session['_auth_user_id'], username)
         if form.is_valid():
-            self.create_question(
-                username, request.session['_auth_user_id'], form.cleaned_data['question_content'])
-            context['question_submitted'] = "Your question was submitted"
+            if form.cleaned_data['action'] == 'ask_question':
+                self.create_question(
+                    username, request.session['_auth_user_id'], form.cleaned_data['question_content'])
+                context['question_submitted'] = "Your question was submitted"
+            elif form.cleaned_data['action'] == 'add_friend':
+                context['invitation_sent'] = True
+                logged_in_user = UserModel.objects.get(
+                    pk=request.session['_auth_user_id'])
+                viewed_user = UserModel.objects.get(username=username)
+                friend = FriendsModel(first=logged_in_user, second=viewed_user)
+                friend.save()
         return render(request, "ask/user.html", context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context

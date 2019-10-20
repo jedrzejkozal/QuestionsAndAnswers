@@ -12,11 +12,23 @@
     <div class="question_user_block">
         <img src="https://via.placeholder.com/100" class="avatar">
         <p class="username">{{username}} profile</p>
+        {% if not is_friend %}
+        {% if invitation_sent %}
         <p class="sent">Your invitation have been sent</p>
+        {% else %}
         <form method="POST" class="add_to_friends_form" action="{% url 'ask:user' username %}">
+            {% csrf_token %}
             <input type="submit" class="add_to_friends" value="Add to friends">
-            <input type="hidden" name="add_friend" value="add_friend" required>
+            <input type="hidden" name="action" value="add_friend" required>
         </form>
+        {% endif %}
+        {% else %}
+        <form method="POST" class="add_to_friends_form" action="{% url 'ask:user' username %}">
+            {% csrf_token %}
+            <input type="submit" class="add_to_friends" value="Remove from friends">
+            <input type="hidden" name="action" value="remove_friend" required>
+        </form>
+        {% endif %}
     </div>
     {% if request.session.logged_in %}
     <div class="ask_question">
@@ -25,8 +37,8 @@
             <a class="prompt">Ask some question:</a>
             <input type="textarea" class="question_textbox" id="question_content" name="question_content" required>
             <br>
+            <input type="hidden" name="action" value="ask_question" required>
             <input type="submit" class="question_submit" value="Ask">
-            <input type="hidden" name="ask_question" value="ask_question" required>
         </form>
     </div>
     <div class="bar_placeholder"></div>

@@ -42,7 +42,9 @@ class SignUpForm(forms.Form):
 
 
 class QuestionForm(forms.Form):
-    question_content = forms.CharField(max_length=1000, required=True)
+    question_content = forms.CharField(max_length=1000, required=False)
+    action = forms.ChoiceField(
+        choices=[('ask_question', 'ask_question'), ('add_friend', 'add_friend')])
 
 
 class AnswerForm(forms.Form):
