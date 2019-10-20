@@ -157,14 +157,17 @@ class UserView(FormView, QuestionsMixIn):
     def get_context(self, logedin_user_id, username):
         viewed_user = UserModel.objects.get(username=username)
         questions_with_answers = self.questions_with_answers(viewed_user)
+        is_friend_is_accepted = self.is_friend_is_accepted(
+            logedin_user_id, viewed_user)
         context = {
             'username': username,
             'questions_with_answers': questions_with_answers,
-            'is_friend': self.is_friend(logedin_user_id, viewed_user),
+            'is_friend': is_friend_is_accepted[0],
+            'accepted': is_friend_is_accepted[1],
         }
         return context
 
-    def is_friend(self, logedin_user_id, viewed_user):
+    def is_friend_is_accepted(self, logedin_user_id, viewed_user):
         logedin_user = UserModel.objects.get(pk=logedin_user_id)
 
         try:
@@ -175,11 +178,11 @@ class UserView(FormView, QuestionsMixIn):
                 friends = FriendsModel.objects.get(
                     first=viewed_user, second=logedin_user)
             except FriendsModel.DoesNotExist:
-                return False
+                return False, False
             else:
-                return True
+                return True, friends.accepted
         else:
-            return True
+            return True, friends.accepted
 
     def create_question(self, owner_username, logedin_user_id, content):
         asked_by = UserModel.objects.filter(pk=logedin_user_id)[0]

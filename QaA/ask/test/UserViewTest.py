@@ -118,6 +118,56 @@ class UserViewTest(TestCase, QuestionsMixIn):
 
         self.assertEqual(response.context['is_friend'], True)
 
+    def test_GET_users_are_not_friends_accepted_in_context_equals_False(self):
+        self.create_users()
+        self.login_user(user_id=1)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['accepted'], False)
+
+    def test_GET_friends_table_exists_but_is_not_accepted_accepted_in_context_equals_False(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friends = FriendsModel(first=self.test_user1, second=self.test_user2)
+        friends.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['accepted'], False)
+
+    def test_GET_friends_table_exists_but_is_not_accepted_accepted_in_context_equals_False_symmetrical(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friends = FriendsModel(first=self.test_user2, second=self.test_user1)
+        friends.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['accepted'], False)
+
+    def test_GET_friends_table_exists_is_accepted_accepted_in_context_equals_True(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friends = FriendsModel(first=self.test_user1,
+                               second=self.test_user2, accepted=True)
+        friends.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['accepted'], True)
+
+    def test_GET_friends_table_exists_is_accepted_accepted_in_context_equals_True_symmetrical(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friends = FriendsModel(first=self.test_user2,
+                               second=self.test_user1, accepted=True)
+        friends.save()
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['accepted'], True)
+
     def test_POST_new_question_is_created_in_database(self):
         self.create_users()
         self.login_user(user_id=1)
