@@ -1,6 +1,7 @@
-from django.test import TestCase
-from ..test.QuestionsMixIn import *
 from django.shortcuts import reverse
+from django.test import TestCase
+
+from ..test.QuestionsMixIn import *
 
 
 class UnansweredViewTest(TestCase, QuestionsMixIn):

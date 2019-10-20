@@ -1,16 +1,14 @@
-from django.contrib.auth.models import User
-
-from ..models import AnswerModel, QuestionModel
+from ..models import UserModel, AnswerModel, QuestionModel
 
 
 class QuestionsMixIn:
 
     def create_users(self):
-        self.test_user1 = User(username="TestUser1")
+        self.test_user1 = UserModel(username="TestUser1")
         self.test_user1.save()
-        self.test_user2 = User(username="TestUser2")
+        self.test_user2 = UserModel(username="TestUser2")
         self.test_user2.save()
-        self.test_user3 = User(username="TestUser3")
+        self.test_user3 = UserModel(username="TestUser3")
         self.test_user3.save()
 
     def create_question1(self, with_answer=False):

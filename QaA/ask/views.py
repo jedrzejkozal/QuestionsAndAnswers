@@ -1,14 +1,14 @@
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
-from django.views.generic.edit import FormView
 from django.views.generic.base import View
-from django.contrib.auth import login, authenticate
+from django.views.generic.edit import FormView
+from django.shortcuts import reverse
 
-from .models import QuestionModel, AnswerModel
-
-from .forms import SignUpForm, QuestionForm, AnswerForm
+from .forms import AnswerForm, QuestionForm, SignUpForm
+from .models import UserModel, AnswerModel, QuestionModel
 
 
 def index(request):
@@ -55,7 +55,7 @@ class SignUpView(FormView):
             'username': clean_data['username'],
             'email': clean_data['email'],
         }
-        return User(**userdata)
+        return UserModel(**userdata)
 
     def log_in(self, username, password, request):
         user = authenticate(request, username=username, password=password)
@@ -99,7 +99,7 @@ class ProfileView(View, QuestionsMixIn):
 
     def get_context(self, request):
         user_id = request.session['_auth_user_id']
-        user = User.objects.get(pk=user_id)
+        user = UserModel.objects.get(pk=user_id)
         questions_with_answers = self.questions_with_answers(
             user)
         num_unanswered = self.get_num_unanswered(user_id)
@@ -108,7 +108,7 @@ class ProfileView(View, QuestionsMixIn):
         return context
 
     def get_num_unanswered(self, user_id):
-        user = User.objects.get(pk=user_id)
+        user = UserModel.objects.get(pk=user_id)
         unanswered_questions = self.unanswered_questions(user)
         return len(unanswered_questions)
 
@@ -130,15 +130,15 @@ class UserView(FormView, QuestionsMixIn):
         return render(request, "ask/user.html", context=context)
 
     def get_user_questions(self, username):
-        user = User.objects.get(username=username)
+        user = UserModel.objects.get(username=username)
         questions_with_answers = self.questions_with_answers(user)
         context = {'username': username,
                    "questions_with_answers": questions_with_answers}
         return context
 
     def create_question(self, owner_username, logedin_user_id, content):
-        asked_by = User.objects.filter(pk=logedin_user_id)[0]
-        owner = User.objects.filter(username=owner_username)[0]
+        asked_by = UserModel.objects.filter(pk=logedin_user_id)[0]
+        owner = UserModel.objects.filter(username=owner_username)[0]
         question = QuestionModel(owner=owner,
                                  asked_by=asked_by,
                                  content=content)
@@ -149,7 +149,12 @@ class UnansweredView(FormView, QuestionsMixIn):
     form_class = AnswerForm
 
     def get(self, request):
-        user = User.objects.filter(pk=request.session['_auth_user_id'])[0]
+        try:
+            user = UserModel.objects.filter(
+                pk=request.session['_auth_user_id'])[0]
+        except KeyError:
+            return HttpResponseRedirect(reverse('ask:login'))
+
         unanswered_questions = self.unanswered_questions(user)
         unanswered_questions = unanswered_questions.order_by('date')[::-1]
         context = {'unanswered_questions': unanswered_questions}
@@ -173,3 +178,47 @@ class UnansweredView(FormView, QuestionsMixIn):
         question = QuestionModel.objects.get(id=user_id)
         question.answer = answer
         question.save()
+
+
+class FriendsView(View):
+
+    def get(self, request):
+        try:
+            user = UserModel.objects.filter(
+                pk=request.session['_auth_user_id'])[0]
+        except KeyError:
+            return HttpResponseRedirect(reverse('ask:login'))
+
+        friends = self.order_based_on_request(request, user)
+        context = {"friends": friends}
+
+        return render(request, reverse("ask:friends.html"), context=context)
+
+    def order_based_on_request(self, request, user):
+        last_token = request.path.split('/')[-1]
+
+        if last_token == 'recent':
+            return self.order_by_date(user)[::-1]
+        elif last_token == 'alph':
+            return self.order_by_alphabet(user)
+        else:
+            return self.user_friends(user)
+
+    def order_by_date(self, user):
+        date = [f.date for f in user.friendsmodel_set.all()]
+        second_date = [f.date for f in user.friends_second.all()]
+        friends_with_date = list(
+            zip(self.user_friends(user), date + second_date))
+        friends_with_date.sort(key=lambda t: t[1].time())
+        friends = [t[0] for t in friends_with_date]
+        return friends
+
+    def order_by_alphabet(self, user):
+        friends = self.user_friends(user)
+        friends.sort(key=lambda f: f.username)
+        return friends
+
+    def user_friends(self, user):
+        friends = user.friends.all()
+        second_friends = [f.first for f in user.friends_second.all()]
+        return list(friends) + second_friends

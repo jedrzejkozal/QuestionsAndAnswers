@@ -121,3 +121,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/ask/profile'
+
+AUTH_USER_MODEL = 'ask.UserModel'

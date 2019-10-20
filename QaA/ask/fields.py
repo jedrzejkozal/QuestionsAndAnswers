@@ -2,19 +2,20 @@ import re
 from difflib import SequenceMatcher
 
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import (
-    UserAttributeSimilarityValidator, validate_password)
+    CommonPasswordValidator, UserAttributeSimilarityValidator,
+    validate_password)
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
-from django.contrib.auth.password_validation import CommonPasswordValidator
+
+from .models import UserModel
 
 
 class UsernameField(forms.CharField):
 
     def validate(self, value):
         super().validate(value)
-        queryset = User.objects.filter(username=value)
+        queryset = UserModel.objects.filter(username=value)
         if len(queryset) != 0:
             raise forms.ValidationError("Username already taken")
 
@@ -23,7 +24,7 @@ class EmailField(forms.EmailField):
 
     def validate(self, value):
         super().validate(value)
-        queryset = User.objects.filter(email=value)
+        queryset = UserModel.objects.filter(email=value)
         if len(queryset) != 0:
             raise forms.ValidationError("Email address already taken")
 

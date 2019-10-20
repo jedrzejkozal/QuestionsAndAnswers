@@ -1,10 +1,8 @@
-from django.test import TestCase
-
-from django.test import TestCase, RequestFactory
-from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import reverse
+from django.test import RequestFactory, TestCase
 
+from ..models import UserModel
 from ..views import SignUpView
 
 
@@ -70,7 +68,7 @@ class SignUpTests(TestCase):
                              "This field is required.")
 
     def test_username_already_taken(self):
-        User.objects.create_user("jj")
+        UserModel.objects.create_user("jj")
         form_input = self.valid_form()
         request = self.factory.post(self.url, data=form_input)
 
@@ -81,7 +79,7 @@ class SignUpTests(TestCase):
                              "Username already taken")
 
     def test_email_already_taken(self):
-        User.objects.create_user("otherUser", email="some1@email.com")
+        UserModel.objects.create_user("otherUser", email="some1@email.com")
         form_input = self.valid_form()
         request = self.factory.post(self.url, data=form_input)
 
@@ -196,7 +194,7 @@ class SignUpTests(TestCase):
         form_input = self.valid_form()
         response = self.client.post(self.url, data=form_input)
 
-        queryset = User.objects.filter(username='jj')
+        queryset = UserModel.objects.filter(username='jj')
         self.assertEqual(queryset[0].first_name, 'JJ')
 
     def test_form_correct_user_is_logged_in_session(self):

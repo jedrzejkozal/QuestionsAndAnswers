@@ -1,0 +1,53 @@
+{% extends "ask/navigation_bar.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ask/navigation_bar.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'ask/questions.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'ask/friends.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<div class="questions">
+    <div class="question_block">
+        <div class="menu">
+            <a href="{% url 'ask:friends.recent' %}" class="item">Recently added</a>
+            <a href="{% url 'ask:friends.alph' %}" class="item">Alphabetical order</a>
+            <a></a>
+            <form method="GET" action="{% url 'ask:friends' %}">
+                <a class="search_text">Search: </a>
+                <input type="text" class="search" required>
+            </form>
+        </div>
+        <hr>
+        <div class="friends_container">
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">user1</a>
+            </div>
+            {% for friend in friends %}
+            <div class="friend">
+                <img src="https://via.placeholder.com/100" class="avatar">
+                <br><a class="username">{{firend.username}}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

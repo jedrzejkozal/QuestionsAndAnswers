@@ -17,5 +17,8 @@ urlpatterns = [
         template_name='ask/privacypolicy.html'), name='privacypolicy'),
     path('profile', views.ProfileView.as_view(), name='profile'),
     path('user/<str:username>', views.UserView.as_view(), name='user'),
-    path('unanswered', views.UnansweredView.as_view(), name='unanswered')
+    path('unanswered', views.UnansweredView.as_view(), name='unanswered'),
+    path('friends', views.FriendsView.as_view(), name='friends'),
+    path('frieds/recent', views.FriendsView.as_view(), name='friends.recent'),
+    path('frieds/alph', views.FriendsView.as_view(), name='friends.alph'),
 ]

@@ -1,9 +1,9 @@
-from django.test import TestCase, RequestFactory
 from django.http.response import HttpResponse
-from ..views import ProfileView
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from ..test.QuestionsMixIn import *
+from ..views import ProfileView
 
 
 class ProfileViewTest(TestCase, QuestionsMixIn):
