@@ -74,6 +74,25 @@ class QuestionsMixIn:
         answers = [question.answer for question in answered_questions]
         return list(zip(answered_questions, answers))
 
+    @staticmethod
+    def add_num_unanswered_to_context(func, *args, **kwargs):
+        def context_with_unanswered(self, *args, **kwargs):
+            context = func(self, *args, **kwargs)
+            user_id = args[0]
+            context["num_unanswered"] = self.get_num_unanswered(user_id)
+            return context
+        return context_with_unanswered
+
+    def get_num_unanswered(self, user_id):
+        if type(user_id) == int:
+            user = UserModel.objects.get(pk=user_id)
+        elif type(user_id) == str:
+            user = UserModel.objects.get(pk=user_id)
+        else:
+            user = user_id
+        unanswered_questions = self.unanswered_questions(user)
+        return len(unanswered_questions)
+
     def unanswered_questions(self, user):
         unanswered_questions = QuestionModel.objects.filter(
             owner=user).filter(answer=None)
@@ -85,32 +104,27 @@ class ProfileView(View, QuestionsMixIn):
     def get(self, request):
         if not self.is_user_logged_in(request.session):
             return HttpResponseRedirect(reverse("ask:login"))
-        context = self.get_context(request)
+
+        user_id = request.session['_auth_user_id']
+        context = self.get_context(user_id)
         return render(request, "ask/profile.html", context=context)
 
     def is_user_logged_in(self, session):
         try:
-            if session['logged_in'] == False:
-                return False
+            if session['logged_in']:
+                return True
         except KeyError:
             return False
         else:
-            return True
+            return False
 
-    def get_context(self, request):
-        user_id = request.session['_auth_user_id']
+    @QuestionsMixIn.add_num_unanswered_to_context
+    def get_context(self, user_id):
         user = UserModel.objects.get(pk=user_id)
         questions_with_answers = self.questions_with_answers(
             user)
-        num_unanswered = self.get_num_unanswered(user_id)
-        context = {"questions_with_answers": questions_with_answers,
-                   "num_unanswered": num_unanswered}
+        context = {"questions_with_answers": questions_with_answers}
         return context
-
-    def get_num_unanswered(self, user_id):
-        user = UserModel.objects.get(pk=user_id)
-        unanswered_questions = self.unanswered_questions(user)
-        return len(unanswered_questions)
 
 
 class UserView(FormView, QuestionsMixIn):
@@ -129,6 +143,7 @@ class UserView(FormView, QuestionsMixIn):
             context['question_submitted'] = "Your question was submitted"
         return render(request, "ask/user.html", context=context)
 
+    @QuestionsMixIn.add_num_unanswered_to_context
     def get_user_questions(self, username):
         user = UserModel.objects.get(username=username)
         questions_with_answers = self.questions_with_answers(user)
@@ -155,10 +170,15 @@ class UnansweredView(FormView, QuestionsMixIn):
         except KeyError:
             return HttpResponseRedirect(reverse('ask:login'))
 
+        context = self.get_context(user)
+        return render(request, 'ask/unanswered.html', context=context)
+
+    @QuestionsMixIn.add_num_unanswered_to_context
+    def get_context(self, user):
         unanswered_questions = self.unanswered_questions(user)
         unanswered_questions = unanswered_questions.order_by('date')[::-1]
         context = {'unanswered_questions': unanswered_questions}
-        return render(request, 'ask/unanswered.html', context=context)
+        return context
 
     def post(self, request):
         form = self.get_form()
@@ -180,7 +200,7 @@ class UnansweredView(FormView, QuestionsMixIn):
         question.save()
 
 
-class FriendsView(View):
+class FriendsView(View, QuestionsMixIn):
 
     def get(self, request):
         try:
@@ -189,10 +209,14 @@ class FriendsView(View):
         except KeyError:
             return HttpResponseRedirect(reverse('ask:login'))
 
+        context = self.get_context(user, request)
+        return render(request, "ask/friends.html", context=context)
+
+    @QuestionsMixIn.add_num_unanswered_to_context
+    def get_context(self, user, request):
         friends = self.order_based_on_request(request, user)
         context = {"friends": friends}
-
-        return render(request, "ask/friends.html", context=context)
+        return context
 
     def order_based_on_request(self, request, user):
         last_token = request.path.split('/')[-1]
