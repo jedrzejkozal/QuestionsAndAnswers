@@ -11,6 +11,72 @@ from .forms import AnswerForm, QuestionForm, SignUpForm, FriendAcceptedForm
 from .models import UserModel, AnswerModel, QuestionModel, FriendsModel
 
 
+class QuestionsMixIn:
+
+    def questions_with_answers(self, user):
+        answered_questions = QuestionModel.objects.filter(
+            owner=user).exclude(answer=None).order_by('date')[::-1]
+        answers = [question.answer for question in answered_questions]
+        return list(zip(answered_questions, answers))
+
+    @staticmethod
+    def add_num_unanswered_to_context(func, *args, **kwargs):
+        def context_with_unanswered(self, *args, **kwargs):
+            context = func(self, *args, **kwargs)
+            user_id = args[0]
+            context["num_unanswered"] = self.get_num_unanswered(user_id)
+            return context
+        return context_with_unanswered
+
+    def get_num_unanswered(self, user_id):
+        if type(user_id) == int:
+            user = UserModel.objects.get(pk=user_id)
+        elif type(user_id) == str:
+            user = UserModel.objects.get(pk=user_id)
+        else:
+            user = user_id
+        unanswered_questions = self.unanswered_questions(user)
+        return len(unanswered_questions)
+
+    def unanswered_questions(self, user):
+        unanswered_questions = QuestionModel.objects.filter(
+            owner=user).filter(answer=None)
+        return unanswered_questions
+
+
+class FriendsMixIn:
+
+    @staticmethod
+    def add_num_invites_to_context(func, *args, **kwargs):
+        def context_with_invites(self, *args, **kwargs):
+            context = func(self, *args, **kwargs)
+            user_id = args[0]
+            context["num_invites"] = self.get_num_invites(user_id)
+            return context
+        return context_with_invites
+
+    def get_num_invites(self, user_id):
+        if type(user_id) == int:
+            user = UserModel.objects.get(pk=user_id)
+        elif type(user_id) == str:
+            user = UserModel.objects.get(pk=user_id)
+        else:
+            user = user_id
+        user_invites = self.user_friends(user, accepted=False)
+        return len(user_invites)
+
+    def user_friends(self, user, accepted=True):
+        friends = list(user.friends.all())
+        second_friends = [f.first for f in user.friends_second.all()]
+        friends_accepted = [f.accepted for f in user.friendsmodel_set.all()]
+        second_accepted = [f.accepted for f in user.friends_second.all()]
+        friends_with_accepted = list(
+            zip(friends + second_friends, friends_accepted + second_accepted))
+        filtered = filter(lambda t: t[1] == accepted, friends_with_accepted)
+
+        return [f[0] for f in filtered]
+
+
 def index(request):
     return render(request, "ask/index.html")
 
@@ -66,40 +132,7 @@ class SignUpView(FormView):
         request.session['username'] = username
 
 
-class QuestionsMixIn:
-
-    def questions_with_answers(self, user):
-        answered_questions = QuestionModel.objects.filter(
-            owner=user).exclude(answer=None).order_by('date')[::-1]
-        answers = [question.answer for question in answered_questions]
-        return list(zip(answered_questions, answers))
-
-    @staticmethod
-    def add_num_unanswered_to_context(func, *args, **kwargs):
-        def context_with_unanswered(self, *args, **kwargs):
-            context = func(self, *args, **kwargs)
-            user_id = args[0]
-            context["num_unanswered"] = self.get_num_unanswered(user_id)
-            return context
-        return context_with_unanswered
-
-    def get_num_unanswered(self, user_id):
-        if type(user_id) == int:
-            user = UserModel.objects.get(pk=user_id)
-        elif type(user_id) == str:
-            user = UserModel.objects.get(pk=user_id)
-        else:
-            user = user_id
-        unanswered_questions = self.unanswered_questions(user)
-        return len(unanswered_questions)
-
-    def unanswered_questions(self, user):
-        unanswered_questions = QuestionModel.objects.filter(
-            owner=user).filter(answer=None)
-        return unanswered_questions
-
-
-class ProfileView(View, QuestionsMixIn):
+class ProfileView(View, QuestionsMixIn, FriendsMixIn):
 
     def get(self, request):
         if not self.is_user_logged_in(request.session):
@@ -119,6 +152,7 @@ class ProfileView(View, QuestionsMixIn):
             return False
 
     @QuestionsMixIn.add_num_unanswered_to_context
+    @FriendsMixIn.add_num_invites_to_context
     def get_context(self, user_id):
         user = UserModel.objects.get(pk=user_id)
         questions_with_answers = self.questions_with_answers(
@@ -127,7 +161,7 @@ class ProfileView(View, QuestionsMixIn):
         return context
 
 
-class UserView(View, FormMixin, QuestionsMixIn):
+class UserView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
     form_class = QuestionForm
 
     def get(self, request, username):
@@ -152,6 +186,7 @@ class UserView(View, FormMixin, QuestionsMixIn):
         return render(request, "ask/user.html", context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context
+    @FriendsMixIn.add_num_invites_to_context
     def get_context(self, logedin_user_id, username):
         viewed_user = UserModel.objects.get(username=username)
         questions_with_answers = self.questions_with_answers(viewed_user)
@@ -197,7 +232,7 @@ class UserView(View, FormMixin, QuestionsMixIn):
         friend.save()
 
 
-class UnansweredView(View, FormMixin, QuestionsMixIn):
+class UnansweredView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
     form_class = AnswerForm
 
     def get(self, request):
@@ -211,6 +246,7 @@ class UnansweredView(View, FormMixin, QuestionsMixIn):
         return render(request, 'ask/unanswered.html', context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context
+    @FriendsMixIn.add_num_invites_to_context
     def get_context(self, user):
         unanswered_questions = self.unanswered_questions(user)
         unanswered_questions = unanswered_questions.order_by('date')[::-1]
@@ -237,12 +273,12 @@ class UnansweredView(View, FormMixin, QuestionsMixIn):
         question.save()
 
 
-class FriendsView(View, QuestionsMixIn):
+class FriendsView(View, QuestionsMixIn, FriendsMixIn):
 
     def get(self, request):
         try:
-            user = UserModel.objects.filter(
-                pk=request.session['_auth_user_id'])[0]
+            user = UserModel.objects.get(
+                pk=request.session['_auth_user_id'])
         except KeyError:
             return HttpResponseRedirect(reverse('ask:login'))
 
@@ -250,6 +286,7 @@ class FriendsView(View, QuestionsMixIn):
         return render(request, "ask/friends.html", context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context
+    @FriendsMixIn.add_num_invites_to_context
     def get_context(self, user, request):
         last_token = request.path.split('/')[-1]
 
@@ -284,17 +321,6 @@ class FriendsView(View, QuestionsMixIn):
         friends = self.user_friends(user)
         friends.sort(key=lambda f: f.username)
         return friends
-
-    def user_friends(self, user, accepted=True):
-        friends = list(user.friends.all())
-        second_friends = [f.first for f in user.friends_second.all()]
-        friends_accepted = [f.accepted for f in user.friendsmodel_set.all()]
-        second_accepted = [f.accepted for f in user.friends_second.all()]
-        friends_with_accepted = list(
-            zip(friends + second_friends, friends_accepted + second_accepted))
-        filtered = filter(lambda t: t[1] == accepted, friends_with_accepted)
-
-        return [f[0] for f in filtered]
 
 
 class FriendAcceptedView(View, FormMixin):

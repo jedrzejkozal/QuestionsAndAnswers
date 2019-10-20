@@ -18,7 +18,11 @@
     {% else %}
     <a href="{% url 'ask:unanswered' %}">Unanswered questions</a>
     {% endif %}
+    {% if num_invites %}
+    <a href="{% url 'ask:friends' %}">Friends({{num_invites}})</a>
+    {% else %}
     <a href="{% url 'ask:friends' %}">Friends</a>
+    {% endif %}
     <a>Messages</a>
     <a>Settings</a>
 </nav>
