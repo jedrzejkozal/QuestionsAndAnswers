@@ -12,6 +12,7 @@ class FriendsModel(models.Model):
     second = models.ForeignKey(
         UserModel, on_delete=models.CASCADE, related_name="friends_second")
     date = models.DateTimeField(auto_now_add=True)
+    accepted = models.BooleanField(default=False)
 
 
 class AnswerModel(models.Model):

@@ -9,21 +9,21 @@ from ..models import FriendsModel
 class UserViewTest(TestCase, QuestionsMixIn):
     url = reverse('ask:user', args=('TestUser2',))
 
-    def test_context_contains_viewed_user_username(self):
+    def test_GET_context_contains_viewed_user_username(self):
         self.create_users()
         self.login_user(user_id=2)
         response = self.client.get(self.url)
 
         self.assertEqual(response.context['username'], 'TestUser2')
 
-    def test_username_is_redered_in_template(self):
+    def test_GET_username_is_redered_in_template(self):
         self.create_users()
         self.login_user(user_id=2)
         response = self.client.get(self.url)
 
         self.assertContains(response, 'TestUser2')
 
-    def test_context_contains_user_questions(self):
+    def test_GET_context_contains_user_questions(self):
         self.create_users()
         self.login_user(user_id=2)
         self.create_question1(with_answer=True)
@@ -34,7 +34,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
         self.assertEqual(response.context['questions_with_answers'],
                          [(self.question1, self.answer1)])
 
-    def test_context_multiple_questions_are_ordered_by_newest(self):
+    def test_GET_context_multiple_questions_are_ordered_by_newest(self):
         self.create_users()
         self.login_user(user_id=2)
         self.create_question1(with_answer=True)
@@ -46,7 +46,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
         self.assertEqual(response.context['questions_with_answers'],
                          [(self.question2, self.answer2), (self.question1, self.answer1)])
 
-    def test_questions_of_other_users_are_not_in_query(self):
+    def test_GET_questions_of_other_users_are_not_in_query(self):
         self.create_users()
         self.login_user(user_id=2)
         self.create_question1(with_answer=True)
@@ -58,7 +58,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
         self.assertEqual(response.context['questions_with_answers'],
                          [(self.question1, self.answer1)])
 
-    def test_only_answered_questions_are_in_query(self):
+    def test_GET_only_answered_questions_are_in_query(self):
         self.create_users()
         self.login_user(user_id=2)
         self.create_question1(with_answer=True)
@@ -69,7 +69,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
         self.assertEqual(response.context['questions_with_answers'],
                          [(self.question1, self.answer1)])
 
-    def test_template_rendered_with_questions_contents(self):
+    def test_GET_template_rendered_with_questions_contents(self):
         self.create_users()
         self.login_user(user_id=2)
         self.create_question1(with_answer=True)
@@ -80,7 +80,7 @@ class UserViewTest(TestCase, QuestionsMixIn):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "What is the meaning of everything?")
 
-    def test_template_rendered_with_answer_contents(self):
+    def test_GET_template_rendered_with_answer_contents(self):
         self.create_users()
         self.login_user(user_id=2)
         self.create_question1(with_answer=True)
@@ -167,6 +167,17 @@ class UserViewTest(TestCase, QuestionsMixIn):
         created_friend = FriendsModel.objects.filter(
             first=self.test_user1, second=self.test_user2)
         self.assertNotEqual(len(created_friend), 0)
+
+    def test_POST_after_invite_friend_invitation_is_not_accepted(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        form = self.get_valid_invite_form()
+
+        response = self.client.post(self.url, data=form)
+
+        created_friend = FriendsModel.objects.filter(
+            first=self.test_user1, second=self.test_user2)
+        self.assertEqual(created_friend[0].accepted, False)
 
     def get_valid_question_form(self):
         form = {
