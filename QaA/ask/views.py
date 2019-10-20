@@ -84,7 +84,7 @@ class ProfileView(View, QuestionsMixIn):
 
     def get(self, request):
         if not self.is_user_logged_in(request.session):
-            return HttpResponseRedirect("ask/login.html")
+            return HttpResponseRedirect(reverse("ask:login"))
         context = self.get_context(request)
         return render(request, "ask/profile.html", context=context)
 
@@ -192,7 +192,7 @@ class FriendsView(View):
         friends = self.order_based_on_request(request, user)
         context = {"friends": friends}
 
-        return render(request, reverse("ask:friends.html"), context=context)
+        return render(request, "ask/friends.html", context=context)
 
     def order_based_on_request(self, request, user):
         last_token = request.path.split('/')[-1]
