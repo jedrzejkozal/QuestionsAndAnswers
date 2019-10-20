@@ -4,10 +4,10 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.base import View
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, FormMixin
 from django.shortcuts import reverse
 
-from .forms import AnswerForm, QuestionForm, SignUpForm
+from .forms import AnswerForm, QuestionForm, SignUpForm, FriendAcceptedForm
 from .models import UserModel, AnswerModel, QuestionModel, FriendsModel
 
 
@@ -127,7 +127,7 @@ class ProfileView(View, QuestionsMixIn):
         return context
 
 
-class UserView(FormView, QuestionsMixIn):
+class UserView(View, FormMixin, QuestionsMixIn):
     form_class = QuestionForm
 
     def get(self, request, username):
@@ -193,7 +193,7 @@ class UserView(FormView, QuestionsMixIn):
         question.save()
 
 
-class UnansweredView(FormView, QuestionsMixIn):
+class UnansweredView(View, FormMixin, QuestionsMixIn):
     form_class = AnswerForm
 
     def get(self, request):
@@ -249,7 +249,7 @@ class FriendsView(View, QuestionsMixIn):
     def get_context(self, user, request):
         last_token = request.path.split('/')[-1]
 
-        if last_token == 'inv':
+        if last_token == 'inv' or last_token == 'accept':
             context = {
                 'show_invites': True,
                 'invitations': self.user_friends(user, accepted=False),
@@ -291,3 +291,30 @@ class FriendsView(View, QuestionsMixIn):
         filtered = filter(lambda t: t[1] == accepted, friends_with_accepted)
 
         return [f[0] for f in filtered]
+
+
+class FriendAcceptedView(View, FormMixin):
+    form_class = FriendAcceptedForm
+
+    def post(self, request):
+        form = self.get_form()
+
+        if form.is_valid():
+            self.find_users_and_accept(request.session['_auth_user_id'],
+                                       form.cleaned_data['user_id'])
+
+        return FriendsView().get(request)
+
+    def find_users_and_accept(self, user1_id, user2_id):
+        user_first = UserModel.objects.get(pk=user1_id)
+        user_second = UserModel.objects.get(pk=user2_id)
+
+        try:
+            self.accept_invitation(user_second, user_first)
+        except FriendsModel.DoesNotExist:
+            self.accept_invitation(user_first, user_second)
+
+    def accept_invitation(self, user1, user2):
+        friends = FriendsModel.objects.get(first=user1, second=user2)
+        friends.accepted = True
+        friends.save()

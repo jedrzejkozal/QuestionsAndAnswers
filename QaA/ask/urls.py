@@ -21,5 +21,6 @@ urlpatterns = [
     path('friends', views.FriendsView.as_view(), name='friends'),
     path('friends/recent', views.FriendsView.as_view(), name='friends.recent'),
     path('friends/alph', views.FriendsView.as_view(), name='friends.alph'),
-    path('friends/inv', views.FriendsView.as_view(), name="friends.inv"),
+    path('friends/inv', views.FriendsView.as_view(), name='friends.inv'),
+    path('friends/accept', views.FriendAcceptedView.as_view(), name='friends.accept'),
 ]

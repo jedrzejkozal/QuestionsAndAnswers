@@ -23,53 +23,34 @@
         <hr>
         {% if show_invites %}
         <div class="friends_container">
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
+            {% if invitations|length > 0 %}
             {% for user in invitations %}
             <div class="friend">
                 <img src="https://via.placeholder.com/100" class="avatar">
                 <br><a class="username">{{user.username}}</a>
+                <form method="POST" action="{% url 'ask:friends.accept' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value={{user.id}}>
+                    <input type="submit" class="accept" value="Accept" required>
+                </form>
             </div>
             {% endfor %}
+            {% else %}
+            <p class="message">You have no new invitations</p>
+            {% endif %}
         </div>
         {% else %}
         <div class="friends_container">
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
-            <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">user1</a>
-            </div>
+            {% if friends|length > 0 %}
             {% for friend in friends %}
             <div class="friend">
                 <img src="https://via.placeholder.com/100" class="avatar">
                 <br><a class="username">{{friend.username}}</a>
             </div>
             {% endfor %}
+            {% else %}
+            <p class="message">You have no friends yet</p>
+            {% endif %}
         </div>
         {% endif %}
     </div>

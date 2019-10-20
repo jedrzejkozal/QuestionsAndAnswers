@@ -50,3 +50,7 @@ class QuestionForm(forms.Form):
 class AnswerForm(forms.Form):
     answer_content = forms.CharField(max_length=1000, required=True)
     question_id = forms.IntegerField(required=True)
+
+
+class FriendAcceptedForm(forms.Form):
+    user_id = forms.IntegerField(required=True)
