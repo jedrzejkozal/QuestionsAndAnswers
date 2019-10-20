@@ -4,7 +4,7 @@ main {
     height: 100%;
 }
 
-nav{
+nav {
     border: 5px black;
     background-color: beige;
     width: 100%;
@@ -12,9 +12,36 @@ nav{
     display: fixed;
 }
 
+.nav_avatar_position {
+    width: 100%;
+    display: grid;
+    margin-top: 30px;
+}
+
+.nav_avatar {
+    border: 2px solid white;
+    border-radius: 2px;
+    width: 100px;
+    margin: auto;
+}
+
+.nav_username {
+    text-align: center;
+    margin-top: 7px;
+    margin-bottom: 6px;
+}
+
+.nav_line {
+    margin-top: 0px;
+    width: 80%;
+    border-top: none;
+    color: rgba(128, 128, 128, 0.356);
+}
+
 nav a {
     font-weight: bold;
     font-size: 14px;
     margin: 20px;
+    margin-left: 20%;
     display: block;
 }

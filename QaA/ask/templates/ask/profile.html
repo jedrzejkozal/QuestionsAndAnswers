@@ -12,20 +12,12 @@
 {% endblock styles %}
 
 {%block content %}
-    <div class="questions">
-        <div class="question_block">
-            <p class="question">Question 1</p>
-            <p class="answer">Answer 1</p>
-        </div>
-        <div class="question_block">
-            <p class="question">Question 2</p>
-            <p class="answer">Answer 2</p>
-        </div>
-        {% for question, answer in questions_with_answers %}
-        <div class="question_block">
-            <p class="question">{{ question.content }}</p>
-            <p class="answer">{{ answer.content }}</p>
-        </div>
-        {% endfor %}
+<div class="questions">
+    {% for question, answer in questions_with_answers %}
+    <div class="question_block">
+        <p class="question">{{ question.content }}</p>
+        <p class="answer">{{ answer.content }}</p>
     </div>
+    {% endfor %}
+</div>
 {% endblock content %}

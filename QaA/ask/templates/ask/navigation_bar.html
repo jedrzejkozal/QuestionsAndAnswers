@@ -7,6 +7,11 @@
 
 {% block nav %}
 <nav>
+    <div class="nav_avatar_position">
+        <img src="https://via.placeholder.com/100" class="nav_avatar">
+        <p class="nav_username">{{request.session.username}}</p>
+        <hr class="nav_line">
+    </div>
     <a href="{% url 'ask:profile' %}">My Profile</a>
     {% if num_unanswered > 0 %}
     <a href="{% url 'ask:unanswered' %}">Unanswered questions({{num_unanswered}})</a>
