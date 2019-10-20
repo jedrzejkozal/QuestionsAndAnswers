@@ -10,7 +10,13 @@
 {% block content %}
 <div class="questions">
     <div class="question_user_block">
+        <img src="https://via.placeholder.com/100" class="avatar">
         <p class="username">{{username}} profile</p>
+        <p class="sent">Your invitation have been sent</p>
+        <form method="POST" class="add_to_friends_form" action="{% url 'ask:user' username %}">
+            <input type="submit" class="add_to_friends" value="Add to friends">
+            <input type="hidden" name="add_friend" value="add_friend" required>
+        </form>
     </div>
     {% if request.session.logged_in %}
     <div class="ask_question">
@@ -20,6 +26,7 @@
             <input type="textarea" class="question_textbox" id="question_content" name="question_content" required>
             <br>
             <input type="submit" class="question_submit" value="Ask">
+            <input type="hidden" name="ask_question" value="ask_question" required>
         </form>
     </div>
     <div class="bar_placeholder"></div>
