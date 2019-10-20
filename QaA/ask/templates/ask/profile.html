@@ -13,11 +13,15 @@
 
 {%block content %}
 <div class="questions">
-    {% for question, answer in questions_with_answers %}
     <div class="question_block">
+        {% if questions_with_answers %}
+        {% for question, answer in questions_with_answers %}
         <p class="question">{{ question.content }}</p>
         <p class="answer">{{ answer.content }}</p>
+        {% endfor %}
+        {% else %}
+        <p class="no_unanswered">No questions yet</p>
+        {% endif %}
     </div>
-    {% endfor %}
 </div>
 {% endblock content %}

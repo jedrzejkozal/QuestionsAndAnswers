@@ -131,7 +131,8 @@ class UserView(FormView, QuestionsMixIn):
     form_class = QuestionForm
 
     def get(self, request, username):
-        context = self.get_user_questions(username)
+        context = self.get_user_questions(
+            request.session['_auth_user_id'], username)
         return render(request, "ask/user.html", context=context)
 
     def post(self, request, username):
@@ -144,7 +145,7 @@ class UserView(FormView, QuestionsMixIn):
         return render(request, "ask/user.html", context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context
-    def get_user_questions(self, username):
+    def get_user_questions(self, user_id, username):
         user = UserModel.objects.get(username=username)
         questions_with_answers = self.questions_with_answers(user)
         context = {'username': username,
