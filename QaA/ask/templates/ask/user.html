@@ -46,6 +46,8 @@
     <div class="questions">
         {% for question, answer in questions_with_answers %}
         <div class="question_block">
+            <a class="asked_by">Asked by: {{ question.asked_by.username }}</a>
+            <a class="asked_date"> {{ question.date }} </a>
             <p class="question">{{ question.content }}</p>
             <p class="answer">{{ answer.content }}</p>
         </div>

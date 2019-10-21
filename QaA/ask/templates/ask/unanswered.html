@@ -12,6 +12,8 @@
     {% if unanswered_questions %}
     {% for question in unanswered_questions %}
     <div class="question_block">
+        <a class="asked_by">Asked by: {{ question.asked_by.username }}</a>
+        <a class="asked_date"> {{ question.date }} </a>
         <p class="question">{{ question.content }}</p>
         <form method="POST" action="{% url 'ask:unanswered' %}">
             {% csrf_token %}
