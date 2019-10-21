@@ -257,6 +257,43 @@ class UserViewTest(TestCase, QuestionsMixIn):
             first=self.test_user1, second=self.test_user2)
         self.assertEqual(created_friend[0].accepted, False)
 
+    def test_POST_after_remove_friend_is_friend_added_is_False(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friend = FriendsModel(first=self.test_user1, second=self.test_user2)
+        friend.save()
+        form = self.get_valid_remove_form()
+
+        response = self.client.post(self.url, data=form)
+
+        self.assertEqual(response.context['is_friend'], False)
+
+    def test_POST_after_remove_friend_model_is_deleted(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friend = FriendsModel(first=self.test_user1, second=self.test_user2)
+        friend.save()
+        form = self.get_valid_remove_form()
+
+        response = self.client.post(self.url, data=form)
+
+        friend = FriendsModel.objects.filter(
+            first=self.test_user1, second=self.test_user2)
+        self.assertEqual(list(friend), [])
+
+    def test_POST_after_remove_friend_model_is_deleted_symmetrical(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        friend = FriendsModel(first=self.test_user2, second=self.test_user1)
+        friend.save()
+        form = self.get_valid_remove_form()
+
+        response = self.client.post(self.url, data=form)
+
+        friend = FriendsModel.objects.filter(
+            first=self.test_user2, second=self.test_user1)
+        self.assertEqual(list(friend), [])
+
     def get_valid_question_form(self):
         form = {
             'question_content': 'question test content',
@@ -267,5 +304,11 @@ class UserViewTest(TestCase, QuestionsMixIn):
     def get_valid_invite_form(self):
         form = {
             'action': 'add_friend',
+        }
+        return form
+
+    def get_valid_remove_form(self):
+        form = {
+            'action': 'remove_friend',
         }
         return form

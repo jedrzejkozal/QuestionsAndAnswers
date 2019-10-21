@@ -183,6 +183,9 @@ class UserView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
             elif form.cleaned_data['action'] == 'add_friend':
                 context['invitation_sent'] = True
                 self.add_friend(request.session['_auth_user_id'], username)
+            elif form.cleaned_data['action'] == 'remove_friend':
+                context['is_friend'] = False
+                self.remove_friend(request.session['_auth_user_id'], username)
         return render(request, "ask/user.html", context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context
@@ -230,6 +233,14 @@ class UserView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
         viewed_user = UserModel.objects.get(username=username)
         friend = FriendsModel(first=logged_in_user, second=viewed_user)
         friend.save()
+
+    def remove_friend(self, logedin_user_id, username):
+        logged_in_user = UserModel.objects.get(pk=logedin_user_id)
+        viewed_user = UserModel.objects.get(username=username)
+        FriendsModel.objects.filter(
+            first=logged_in_user, second=viewed_user).delete()
+        FriendsModel.objects.filter(
+            first=viewed_user, second=logged_in_user).delete()
 
 
 class UnansweredView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
