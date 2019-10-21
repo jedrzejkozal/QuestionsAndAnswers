@@ -61,6 +61,8 @@ hr {
 
 .username {
     font-size: 13px;
+    text-decoration: none;
+    color: black;
 }
 
 .message {

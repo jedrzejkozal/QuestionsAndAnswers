@@ -45,7 +45,7 @@
             {% for friend in friends %}
             <div class="friend">
                 <img src="https://via.placeholder.com/100" class="avatar">
-                <br><a class="username">{{friend.username}}</a>
+                <br><a class="username" href="{% url 'ask:user' friend.username %}">{{friend.username}}</a>
             </div>
             {% endfor %}
             {% else %}
