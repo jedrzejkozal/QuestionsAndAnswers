@@ -181,7 +181,7 @@ class UserView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
                     form.cleaned_data['question_content'])
                 context['question_submitted'] = "Your question was submitted"
             elif form.cleaned_data['action'] == 'add_friend':
-                context['invitation_sent'] = True
+                context['is_friend'] = True
                 self.add_friend(request.session['_auth_user_id'], username)
             elif form.cleaned_data['action'] == 'remove_friend':
                 context['is_friend'] = False

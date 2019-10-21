@@ -226,14 +226,23 @@ class UserViewTest(TestCase, QuestionsMixIn):
         self.assertEqual(
             response.context['question_submitted'], "Your question was submitted")
 
-    def test_POST_after_invite_friend_invitation_sent_added_to_context(self):
+    def test_POST_after_invite_friend_is_friend_is_True(self):
         self.create_users()
         self.login_user(user_id=1)
         form = self.get_valid_invite_form()
 
         response = self.client.post(self.url, data=form)
 
-        self.assertEqual(response.context['invitation_sent'], True)
+        self.assertEqual(response.context['is_friend'], True)
+
+    def test_POST_after_invite_friend_accepted_is_False(self):
+        self.create_users()
+        self.login_user(user_id=1)
+        form = self.get_valid_invite_form()
+
+        response = self.client.post(self.url, data=form)
+
+        self.assertEqual(response.context['accepted'], False)
 
     def test_POST_after_invite_friend_FriendModel_is_created(self):
         self.create_users()
