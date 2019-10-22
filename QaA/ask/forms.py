@@ -57,3 +57,7 @@ class AnswerForm(forms.Form):
 
 class FriendAcceptedForm(forms.Form):
     user_id = forms.IntegerField(required=True)
+
+
+class FriendSearchForm(forms.Form):
+    search_text = forms.CharField(max_length=50, required=True)

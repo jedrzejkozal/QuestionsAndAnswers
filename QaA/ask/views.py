@@ -7,7 +7,7 @@ from django.views.generic.base import View
 from django.views.generic.edit import FormView, FormMixin
 from django.shortcuts import reverse
 
-from .forms import AnswerForm, QuestionForm, SignUpForm, FriendAcceptedForm
+from .forms import AnswerForm, QuestionForm, SignUpForm, FriendAcceptedForm, FriendSearchForm
 from .models import UserModel, AnswerModel, QuestionModel, FriendsModel
 
 
@@ -359,3 +359,32 @@ class FriendAcceptedView(View, FormMixin):
         friends = FriendsModel.objects.get(first=user1, second=user2)
         friends.accepted = True
         friends.save()
+
+
+class FriendSearchView(View, QuestionsMixIn, FriendsMixIn, FormMixin):
+    form_class = FriendSearchForm
+
+    def post(self, request):
+        try:
+            user = UserModel.objects.get(
+                pk=request.session['_auth_user_id'])
+        except KeyError:
+            return HttpResponseRedirect(reverse('ask:login'))
+
+        context = self.get_context(user, request)
+        return render(request, "ask/friends.html", context=context)
+
+    @QuestionsMixIn.add_num_unanswered_to_context
+    @FriendsMixIn.add_num_invites_to_context
+    def get_context(self, user, request):
+        form = self.get_form()
+        context = {}
+        if form.is_valid():
+            searched_user = form.cleaned_data['search_text']
+            context = {'friends': self.get_matching_friends(
+                user, searched_user)}
+        return context
+
+    def get_matching_friends(self, user, searched_user):
+        friends = self.user_friends(user)
+        return [f for f in friends if searched_user in f.username]

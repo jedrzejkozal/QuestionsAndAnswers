@@ -23,4 +23,5 @@ urlpatterns = [
     path('friends/alph', views.FriendsView.as_view(), name='friends.alph'),
     path('friends/inv', views.FriendsView.as_view(), name='friends.inv'),
     path('friends/accept', views.FriendAcceptedView.as_view(), name='friends.accept'),
+    path('friends/search', views.FriendSearchView.as_view(), name='friends.search'),
 ]

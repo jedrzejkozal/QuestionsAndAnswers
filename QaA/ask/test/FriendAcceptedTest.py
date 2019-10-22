@@ -1,18 +1,17 @@
-
 from django.shortcuts import reverse
 from django.test import TestCase
 
-from ..test.QuestionsMixIn import *
 from ..models import FriendsModel
+from ..test.FriendsMixIn import *
 
 
-class FriendAcceptedTest(TestCase, QuestionsMixIn):
+class FriendAcceptedTest(TestCase, FriendsMixIn):
 
     def setUp(self):
         self.create_users()
-        self.test_user1.friends.add(self.test_user2)
-        self.test_user2.friends.add(self.test_user3)
-        self.login_user(user_id=2)
+        self.make_friends()
+        self.create_invitations()
+        self.log_in(user_id=8)
 
     def test_after_accepting_friend_inv_view_is_returned(self):
         form = self.valid_form()
@@ -27,7 +26,7 @@ class FriendAcceptedTest(TestCase, QuestionsMixIn):
         response = self.client.post(reverse('ask:friends.accept'), data=form)
 
         friends = FriendsModel.objects.get(
-            first=self.test_user1, second=self.test_user2)
+            first=self.user8, second=self.user2)
         self.assertTrue(friends.accepted)
 
     def test_accepting_friend_changes_FriendModel_symmetrical(self):
@@ -36,8 +35,8 @@ class FriendAcceptedTest(TestCase, QuestionsMixIn):
         response = self.client.post(reverse('ask:friends.accept'), data=form)
 
         friends = FriendsModel.objects.get(
-            first=self.test_user2, second=self.test_user3)
+            first=self.user3, second=self.user8)
         self.assertTrue(friends.accepted)
 
-    def valid_form(self, user_id=1):
+    def valid_form(self, user_id=2):
         return {"user_id": user_id}

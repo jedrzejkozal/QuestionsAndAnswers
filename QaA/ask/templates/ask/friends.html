@@ -15,9 +15,10 @@
             <a href="{% url 'ask:friends.alph' %}" class="item">Alphabetical order</a>
             <a href="{% url 'ask:friends.inv' %}" class="item">Invitations</a>
             <a></a>
-            <form method="GET" action="{% url 'ask:friends' %}">
+            <form method="POST" action="{% url 'ask:friends.search' %}">
+                {% csrf_token %}
                 <a class="search_text">Search: </a>
-                <input type="text" class="search" required>
+                <input type="textarea" class="search" id="search_text" name="search_text" required>
             </form>
         </div>
         <hr>
