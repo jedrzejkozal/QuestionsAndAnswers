@@ -1,3 +1,4 @@
+from django.core import mail
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase
@@ -196,6 +197,20 @@ class SignUpTests(TestCase):
 
         queryset = UserModel.objects.filter(username='jj')
         self.assertEqual(queryset[0].first_name, 'JJ')
+
+    def test_form_correct_email_sent(self):
+        form_input = self.valid_form()
+        self.client.post(self.url, data=form_input)
+
+        print(str(mail.outbox[0].body))
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject,
+                         'Account created in Questions&Answers')
+        self.assertEqual(mail.outbox[0].body,
+                         'Thank you for creating account')
+        self.assertEqual(mail.outbox[0].from_email, 'from@example.com')
+        self.assertEqual(mail.outbox[0].to, ['some1@email.com'])
 
     def test_form_correct_user_is_logged_in_session(self):
         form_input = self.valid_form()

@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LoginView, LogoutView
+from django.core.mail import send_mail
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.views.generic.base import View
@@ -41,6 +42,11 @@ class SignUpView(FormView):
             user = self.form_to_model(form)
             user.set_password(form.cleaned_data['password'])
             user.save()
+            send_mail("Account created in Questions&Answers",
+                      "Thank you for creating account",
+                      "from@example.com",
+                      [user.email],
+                      fail_silently=False)
             self.log_in(user.username, form.cleaned_data['password'], request)
             return self.form_valid(form)
         else:

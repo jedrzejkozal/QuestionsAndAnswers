@@ -123,3 +123,7 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/ask/profile'
 
 AUTH_USER_MODEL = 'ask.UserModel'
+
+EMAIL_HOST = 'localhost'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 1025
