@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.views.generic.base import View
@@ -81,6 +82,7 @@ class ProfileView(View, QuestionsMixIn, FriendsMixIn):
             return HttpResponseRedirect(reverse('ask:login'))
 
         context = self.get_context(user)
+        self.add_pagination(context, request)
         return render(request, "ask/profile.html", context=context)
 
     @QuestionsMixIn.add_num_unanswered_to_context
@@ -90,6 +92,11 @@ class ProfileView(View, QuestionsMixIn, FriendsMixIn):
             user)
         context = {"questions_with_answers": questions_with_answers}
         return context
+
+    def add_pagination(self, context, request):
+        paginator = Paginator(context["questions_with_answers"], 6)
+        page = request.GET.get('page')
+        context["questions_with_answers"] = paginator.get_page(page)
 
 
 class UserView(View, FormMixin, QuestionsMixIn, FriendsMixIn):

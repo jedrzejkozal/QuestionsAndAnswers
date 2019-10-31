@@ -35,10 +35,11 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.login_user(user_id=2)
 
         response = self.client.get(reverse('ask:profile'))
+        questions_with_answers = response.context['questions_with_answers']
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['questions_with_answers'],
-                         [(self.question1, self.answer1)])
+        self.assertEqual(questions_with_answers[0][0], self.question1)
+        self.assertEqual(questions_with_answers[0][1], self.answer1)
 
     def test_context_multiple_questions_are_ordered_by_newest(self):
         self.create_users()
@@ -47,10 +48,13 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.login_user(user_id=2)
 
         response = self.client.get(reverse('ask:profile'))
+        questions_with_answers = response.context['questions_with_answers']
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['questions_with_answers'],
-                         [(self.question2, self.answer2), (self.question1, self.answer1)])
+        self.assertEqual(questions_with_answers[0][0], self.question2)
+        self.assertEqual(questions_with_answers[0][1], self.answer2)
+        self.assertEqual(questions_with_answers[1][0], self.question1)
+        self.assertEqual(questions_with_answers[1][1], self.answer1)
 
     def test_questions_of_other_users_are_not_in_query(self):
         self.create_users()
@@ -59,10 +63,11 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.login_user(user_id=2)
 
         response = self.client.get(reverse('ask:profile'))
+        questions_with_answers = response.context['questions_with_answers']
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['questions_with_answers'],
-                         [(self.question1, self.answer1)])
+        self.assertEqual(questions_with_answers[0][0], self.question1)
+        self.assertEqual(questions_with_answers[0][1], self.answer1)
 
     def test_only_answered_questions_are_in_query(self):
         self.create_users()
@@ -71,9 +76,10 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.login_user(user_id=2)
 
         response = self.client.get(reverse('ask:profile'))
+        questions_with_answers = response.context['questions_with_answers']
 
-        self.assertEqual(response.context['questions_with_answers'],
-                         [(self.question1, self.answer1)])
+        self.assertEqual(questions_with_answers[0][0], self.question1)
+        self.assertEqual(questions_with_answers[0][1], self.answer1)
 
     def test_template_rendered_with_questions_contents(self):
         self.create_users()

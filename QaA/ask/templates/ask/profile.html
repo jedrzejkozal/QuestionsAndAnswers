@@ -26,6 +26,25 @@
         <p class="answer">{{ answer.content }}</p>
     </div>
     {% endfor %}
+    <div class="pagination">
+        {% if questions_with_answers.has_previous %}
+        <a href="?page=1" class="pagination_item">first</a>
+        <a href="?page={{questions_with_answers.previous_page_number }}" class="pagination_item">previous</a>
+        {% else %}
+        <a class="pagination_item">first</a>
+        <a class="pagination_item">previous</a>
+        {% endif %}
+        <span class="pagination_item">
+            Page {{questions_with_answers.number}} of {{questions_with_answers.paginator.num_pages}}
+        </span>
+        {% if questions_with_answers.has_next %}
+        <a href="?page={{questions_with_answers.next_page_number}}" class="pagination_item">next</a>
+        <a href="?page={{questions_with_answers.paginator.num_pages}}" class="pagination_item">last</a>
+        {% else %}
+        <a class="pagination_item">next</a>
+        <a class="pagination_item">last</a>
+        {%endif%}
+    </div>
     {% endif %}
 </div>
 {% endblock content %}

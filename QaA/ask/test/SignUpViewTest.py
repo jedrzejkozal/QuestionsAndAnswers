@@ -202,8 +202,6 @@ class SignUpTests(TestCase):
         form_input = self.valid_form()
         self.client.post(self.url, data=form_input)
 
-        print(str(mail.outbox[0].body))
-
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject,
                          'Account created in Questions&Answers')
