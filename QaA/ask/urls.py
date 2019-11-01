@@ -1,8 +1,15 @@
 from django.urls import path
 from django.contrib.auth.views import TemplateView
+from django.contrib.sitemaps.views import sitemap
 
 from . import views
 from .view import FriendsViews as friends
+from .sitemaps import *
+
+
+sitemaps = {
+    'static': StaticViewSitemap,
+}
 
 app_name = "ask"
 urlpatterns = [
@@ -29,4 +36,6 @@ urlpatterns = [
          name='friends.accept'),
     path('friends/search', friends.FriendSearchView.as_view(), name='friends.search'),
     path('friends', friends.FriendsBase.as_view(), name='friends'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemaps')
 ]
