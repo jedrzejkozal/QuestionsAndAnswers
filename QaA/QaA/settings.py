@@ -128,3 +128,6 @@ AUTH_USER_MODEL = 'ask.UserModel'
 EMAIL_HOST = 'localhost'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 1025
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

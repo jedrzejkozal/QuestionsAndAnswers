@@ -27,7 +27,11 @@
             {% if invitations|length > 0 %}
             {% for user in invitations %}
             <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
+                {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" class="nav_avatar">
+                {% else %}
+                <img src="{% static 'ask/default.png' %}" class="avatar">
+                {% endif %}
                 <br><a class="username">{{user.username}}</a>
                 <form method="POST" action="{% url 'ask:friends.accept' %}">
                     {% csrf_token %}
@@ -45,7 +49,11 @@
             {% if friends|length > 0 %}
             {% for friend in friends %}
             <div class="friend">
-                <img src="https://via.placeholder.com/100" class="avatar">
+                {% if friend.avatar %}
+                <img src="{{ friend.avatar.url }}" class="nav_avatar">
+                {% else %}
+                <img src="{% static 'ask/default.png' %}" class="avatar">
+                {% endif %}
                 <br><a class="username" href="{% url 'ask:user' friend.username %}">{{friend.username}}</a>
             </div>
             {% endfor %}

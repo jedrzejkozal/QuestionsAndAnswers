@@ -1,0 +1,27 @@
+{% extends "ask/navigation_bar.html" %}
+{% load static %}
+
+{% block site_title %}
+<title>Profile</title>
+{% endblock site_title %}
+
+{%block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ask/navigation_bar.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'ask/questions.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'ask/settings.css' %}">
+{% endblock styles %}
+
+{%block content %}
+<div class="questions">
+    <div class="question_block">
+        <h4 class="section">Change profile picture</h4>
+        <form method="POST" class="profile_pic" enctype="multipart/form-data" action="{% url 'ask:settings' %}">
+            {% csrf_token %}
+            <input type="file" class="img_select" name="image" accept="image/*" required>
+            {{ form.image.errors }}
+            <br>
+            <input type="submit" class="img_select" value="Upload" required>
+        </form>
+    </div>
+</div>
+{% endblock content %}

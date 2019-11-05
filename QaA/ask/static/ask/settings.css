@@ -1,0 +1,14 @@
+.section {
+    text-align: center;
+    width: 100%;
+}
+
+.profile_pic {
+    width: 100%;
+    text-align: center;
+    margin: 20px;
+}
+
+.img_select {
+    margin: auto;
+}

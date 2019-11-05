@@ -5,3 +5,4 @@ from .test.UnansweredViewTest import *
 from .test.FriendsViewTest import *
 from .test.FriendAcceptedTest import *
 from .test.FriendSearchViewTest import *
+from .test.SettingsViewTest import *

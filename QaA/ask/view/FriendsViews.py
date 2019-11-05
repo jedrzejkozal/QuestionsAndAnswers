@@ -23,6 +23,7 @@ class FriendsBase(View, QuestionsMixIn, FriendsMixIn):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, user, request):
         friends = self.user_friends(user)
         context = {"friends": friends}
@@ -33,6 +34,7 @@ class FriendsRecent(FriendsBase):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, user, request):
         friends = self.order_by_date(user)
         context = {"friends": friends}
@@ -52,6 +54,7 @@ class FriendsAlphabetical(FriendsBase):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, user, request):
         friends = self.order_by_alphabet(user)
         context = {"friends": friends}
@@ -67,6 +70,7 @@ class FriendsInvitationList(FriendsBase):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, user, request):
         context = {
             'show_invites': True,
@@ -117,6 +121,7 @@ class FriendSearchView(View, QuestionsMixIn, FriendsMixIn, FormMixin):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, user, request):
         form = self.get_form()
         context = {}

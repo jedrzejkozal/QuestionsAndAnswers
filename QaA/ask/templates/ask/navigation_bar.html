@@ -8,7 +8,11 @@
 {% block nav %}
 <nav>
     <div class="nav_avatar_position">
-        <img src="https://via.placeholder.com/100" class="nav_avatar">
+        {% if user_avatar %}
+        <img src="{{ user_avatar.url }}" class="nav_avatar">
+        {% else %}
+        <img src="{% static 'ask/default.png' %}" class="nav_avatar">
+        {% endif %}
         <p class="nav_username">{{request.session.username}}</p>
         <hr class="nav_line">
     </div>
@@ -24,6 +28,6 @@
     <a href="{% url 'ask:friends' %}">Friends</a>
     {% endif %}
     <a>Messages</a>
-    <a>Settings</a>
+    <a href="{% url 'ask:settings' %}">Settings</a>
 </nav>
 {% endblock nav %}

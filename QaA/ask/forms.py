@@ -61,3 +61,7 @@ class FriendAcceptedForm(forms.Form):
 
 class FriendSearchForm(forms.Form):
     search_text = forms.CharField(max_length=50, required=True)
+
+
+class ProfileImageForm(forms.Form):
+    image = forms.ImageField(required=True)

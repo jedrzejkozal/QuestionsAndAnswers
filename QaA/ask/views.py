@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.mail import send_mail
@@ -7,7 +9,7 @@ from django.shortcuts import render, reverse
 from django.views.generic.base import View
 from django.views.generic.edit import FormMixin, FormView
 
-from .forms import AnswerForm, QuestionForm, SignUpForm
+from .forms import AnswerForm, ProfileImageForm, QuestionForm, SignUpForm
 from .models import AnswerModel, FriendsModel, UserModel
 from .view.MixIns import *
 
@@ -87,6 +89,7 @@ class ProfileView(View, QuestionsMixIn, FriendsMixIn):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, user):
         questions_with_answers = self.questions_with_answers(
             user)
@@ -130,6 +133,7 @@ class UserView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, logedin_user_id, username):
         viewed_user = UserModel.objects.get(username=username)
         questions_with_answers = self.questions_with_answers(viewed_user)
@@ -198,6 +202,7 @@ class UnansweredView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
 
     @QuestionsMixIn.add_num_unanswered_to_context
     @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
     def get_context(self, user):
         unanswered_questions = self.unanswered_questions(user)
         unanswered_questions = unanswered_questions.order_by('date')[::-1]
@@ -222,3 +227,46 @@ class UnansweredView(View, FormMixin, QuestionsMixIn, FriendsMixIn):
         question = QuestionModel.objects.get(id=user_id)
         question.answer = answer
         question.save()
+
+
+class SettingsView(FormView, QuestionsMixIn, FriendsMixIn):
+    template_name = 'ask/settings.html'
+    form_class = ProfileImageForm
+    success_url = 'settings'
+
+    def get(self, request):
+        try:
+            user = UserModel.objects.get(
+                pk=request.session['_auth_user_id'])
+        except KeyError:
+            return HttpResponseRedirect(reverse('ask:login'))
+
+        context = self.get_context(user)
+        return render(request, 'ask/settings.html', context=context)
+
+    @QuestionsMixIn.add_num_unanswered_to_context
+    @FriendsMixIn.add_num_invites_to_context
+    @AvatarMinIn.add_avatar_to_context
+    def get_context(self, user):
+        context = {}
+        return context
+
+    def post(self, request):
+        form = self.get_form()
+        if form.is_valid():
+            user = self.get_logged_in_user(request)
+            self.remove_old_avatar(user)
+            user.avatar = form.cleaned_data['image']
+            user.save()
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_logged_in_user(self, request):
+        user_id = request.session['_auth_user_id']
+        user = UserModel.objects.get(pk=user_id)
+        return user
+
+    def remove_old_avatar(self, user):
+        if user.__dict__['avatar']:
+            user.avatar.delete(save=True)

@@ -28,6 +28,7 @@ urlpatterns = [
     path('profile', views.ProfileView.as_view(), name='profile'),
     path('user/<str:username>', views.UserView.as_view(), name='user'),
     path('unanswered', views.UnansweredView.as_view(), name='unanswered'),
+    path('settings', views.SettingsView.as_view(), name='settings'),
 
     path('friends/recent', friends.FriendsRecent.as_view(), name='friends.recent'),
     path('friends/alph', friends.FriendsAlphabetical.as_view(), name='friends.alph'),

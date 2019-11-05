@@ -53,7 +53,7 @@ hr {
 }
 
 .avatar {
-    border: 2px solid white;
+    border: 2px solid rgba(46, 44, 44, 0.219);
     border-radius: 2px;
     margin: 0px;
     padding: 0px;
