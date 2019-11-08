@@ -2,4 +2,4 @@
 
 git clone https://github.com/jedrzejkozal/QuestionsAndAnswers
 
-docker image build . -t webapp:0.1.0
+docker image build . -t webapp:0.2.0
