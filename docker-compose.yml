@@ -5,7 +5,7 @@ services:
     image: postgres
   web:
     build: 
-      context: webapp/
+      context: .
       dockerfile: Dockerfile
     image: webapp:0.2.0
     volumes:
