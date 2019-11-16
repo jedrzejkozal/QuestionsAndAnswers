@@ -226,7 +226,8 @@ class SignUpTests(TestCase):
         form_input = self.valid_form()
         response = self.client.post(self.url, data=form_input)
 
-        self.assertEqual(self.client.session['_auth_user_id'], '1')
+        user_id = UserModel.objects.get(username='jj').id
+        self.assertEqual(self.client.session['_auth_user_id'], str(user_id))
 
     def valid_form(self):
         return {'first_name': 'JJ',

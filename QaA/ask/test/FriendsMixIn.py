@@ -51,9 +51,3 @@ class FriendsMixIn:
         self.user8.friends.add(self.user6)
 
         self.user4.friends.add(self.user6)
-
-    def log_in(self, user_id=1):
-        session = self.client.session
-        session['logged_in'] = True
-        session['_auth_user_id'] = user_id
-        session.save()

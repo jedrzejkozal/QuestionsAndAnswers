@@ -9,9 +9,10 @@ from django.test import TestCase
 from PIL import Image
 
 from ..test.QuestionsMixIn import *
+from ..test.LoginMixIn import *
 
 
-class SettingsViewTest(TestCase, QuestionsMixIn):
+class SettingsViewTest(TestCase, QuestionsMixIn, LoginMixIn):
     url = reverse('ask:settings')
 
     def __del__(self):
@@ -22,7 +23,7 @@ class SettingsViewTest(TestCase, QuestionsMixIn):
 
     def test_after_uploading_img_is_saved_in_media_directory(self):
         self.create_users()
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         img = self.get_img('media/testimage.png')
         form = {'image': img}
@@ -39,7 +40,7 @@ class SettingsViewTest(TestCase, QuestionsMixIn):
 
     def test_after_uploading_when_previous_file_exists_only_new_file_is_keept(self):
         self.create_users()
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         shutil.copyfile('media/testimage.png', 'media/testimage1.png')
 
@@ -63,7 +64,7 @@ class SettingsViewTest(TestCase, QuestionsMixIn):
 
     def test_after_uploading_img_context_has_user_avatar(self):
         self.create_users()
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         img = self.get_img('media/testimage.png')
         form = {'image': img}
@@ -71,8 +72,10 @@ class SettingsViewTest(TestCase, QuestionsMixIn):
         self.client.post(self.url, data=form)
         response = self.client.get(self.url)
 
+        user_id = UserModel.objects.get(username="TestUser2").id
         self.assertEqual(
-            response.context['user_avatar'].name, 'user_id_2_TestUser2/avatar.png')
+            response.context['user_avatar'].name,
+            'user_id_{}_TestUser2/avatar.png'.format(user_id))
 
     def get_img(self, path):
         f = open(path, 'rb')

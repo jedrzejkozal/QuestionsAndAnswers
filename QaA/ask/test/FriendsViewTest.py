@@ -2,9 +2,10 @@ from django.shortcuts import reverse
 from django.test import TestCase
 
 from ..test.FriendsMixIn import *
+from ..test.LoginMixIn import *
 
 
-class FriendsViewTest(TestCase, FriendsMixIn):
+class FriendsViewTest(TestCase, FriendsMixIn, LoginMixIn):
 
     def setUp(self):
         self.create_users()
@@ -17,7 +18,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
         self.assertEqual(self.user2, self.user1.friends.all()[0])
 
     def test_GET_all_friends_are_returned(self):
-        self.log_in(user_id=1)
+        self.login_user(username="TestUser1")
 
         response = self.client.get(reverse('ask:friends'))
 
@@ -25,7 +26,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user2, self.user3, self.user5])
 
     def test_GET_all_friends_of_user2_are_returned(self):
-        self.log_in(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:friends'))
 
@@ -33,7 +34,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user4, self.user1, self.user5])
 
     def test_GET_recently_added_returns_sorted_friends_user1(self):
-        self.log_in(user_id=1)
+        self.login_user(username="TestUser1")
 
         response = self.client.get(reverse('ask:friends.recent'))
 
@@ -41,7 +42,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user5, self.user3, self.user2])
 
     def test_GET_recently_added_returns_sorted_friends_user2(self):
-        self.log_in(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:friends.recent'))
 
@@ -49,7 +50,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user5, self.user4, self.user1])
 
     def test_GET_recently_added_returns_sorted_friends_user5(self):
-        self.log_in(user_id=5)
+        self.login_user(username="TestUser5")
 
         response = self.client.get(reverse('ask:friends.recent'))
 
@@ -57,7 +58,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user6, self.user4, self.user3, self.user2, self.user1])
 
     def test_GET_in_alphabetical_order_user1(self):
-        self.log_in(user_id=1)
+        self.login_user(username="TestUser1")
 
         response = self.client.get(reverse('ask:friends.alph'))
 
@@ -65,7 +66,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user2, self.user3, self.user5])
 
     def test_GET_in_alphabetical_order_user2(self):
-        self.log_in(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:friends.alph'))
 
@@ -73,7 +74,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user1, self.user4, self.user5])
 
     def test_GET_in_alphabetical_order_user5(self):
-        self.log_in(user_id=5)
+        self.login_user(username="TestUser5")
 
         response = self.client.get(reverse('ask:friends.alph'))
 
@@ -81,28 +82,28 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          [self.user1, self.user2, self.user3, self.user4, self.user6])
 
     def test_GET_inv_call_context_show_invites_eq_True(self):
-        self.log_in(user_id=1)
+        self.login_user(username="TestUser1")
 
         response = self.client.get(reverse('ask:friends.inv'))
 
         self.assertEqual(response.context['show_invites'], True)
 
     def test_GET_inv_no_invitations_empty_query(self):
-        self.log_in(user_id=1)
+        self.login_user(username="TestUser1")
 
         response = self.client.get(reverse('ask:friends.inv'))
 
         self.assertEqual(list(response.context['invitations']), [])
 
     def test_GET_inv_context_invitations_for_user2(self):
-        self.log_in(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:friends.inv'))
 
         self.assertEqual(list(response.context['invitations']), [self.user8])
 
     def test_GET_inv_context_invitations_for_user8(self):
-        self.log_in(user_id=8)
+        self.login_user(username="TestUser8")
 
         response = self.client.get(reverse('ask:friends.inv'))
 
@@ -110,7 +111,7 @@ class FriendsViewTest(TestCase, FriendsMixIn):
                          self.user2, self.user5, self.user6, self.user3])
 
     def test_GET_inv_context_invitations_for_user6(self):
-        self.log_in(user_id=6)
+        self.login_user(username="TestUser6")
 
         response = self.client.get(reverse('ask:friends.inv'))
 

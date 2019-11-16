@@ -3,10 +3,11 @@ from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from ..test.QuestionsMixIn import *
+from ..test.LoginMixIn import *
 from ..views import ProfileView
 
 
-class ProfileViewTest(TestCase, QuestionsMixIn):
+class ProfileViewTest(TestCase, QuestionsMixIn, LoginMixIn):
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -32,7 +33,7 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
     def test_context_contains_user_questions(self):
         self.create_users()
         self.create_question1(with_answer=True)
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:profile'))
         questions_with_answers = response.context['questions_with_answers']
@@ -45,7 +46,7 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.create_users()
         self.create_question1(with_answer=True)
         self.create_question2(with_answer=True)
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:profile'))
         questions_with_answers = response.context['questions_with_answers']
@@ -60,7 +61,7 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.create_users()
         self.create_question1(with_answer=True)
         self.create_question3(with_answer=True)
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:profile'))
         questions_with_answers = response.context['questions_with_answers']
@@ -73,7 +74,7 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.create_users()
         self.create_question1(with_answer=True)
         self.create_question2()
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:profile'))
         questions_with_answers = response.context['questions_with_answers']
@@ -85,28 +86,28 @@ class ProfileViewTest(TestCase, QuestionsMixIn):
         self.create_users()
         self.create_question1(with_answer=True)
         self.create_question2(with_answer=True)
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:profile'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "What is the meaning of everything?")
+        self.assertContains(response, "Test Question 1")
 
     def test_template_rendered_with_answer_contents(self):
         self.create_users()
         self.create_question1(with_answer=True)
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:profile'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "42")
+        self.assertContains(response, "Test Answer 1")
 
     def test_num_of_unanswered_is_passed_in_context(self):
         self.create_users()
         self.create_question1(with_answer=True)
         self.create_question2()
-        self.login_user(user_id=2)
+        self.login_user(username="TestUser2")
 
         response = self.client.get(reverse('ask:profile'))
 
