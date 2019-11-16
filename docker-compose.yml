@@ -3,6 +3,11 @@ version: '3.7'
 services:
   db:
     image: postgres
+    environment:
+      - POSTGRES_PASSWORD=qwerty1234 
+    ports:
+      - "5432:5432"
+
   web:
     build: 
       context: .
@@ -12,5 +17,7 @@ services:
       - .:/code
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:qwerty1234@db/postgres
     depends_on:
       - db
